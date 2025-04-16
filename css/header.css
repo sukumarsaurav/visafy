@@ -705,7 +705,7 @@ ul {
     height: 100%;
 }
 
-.member-login .login-btn {
+.member-login-top-bar {
     color: var(--color-light);
     text-decoration: none;
     font-size: 13px;
@@ -713,13 +713,13 @@ ul {
     align-items: center;
     gap: 5px;
     padding: 3px 12px;
-    border: 1px solid var(--color-light);
+    border: 1px solid #eaaa34;
     border-radius: 4px;
     transition: all 0.3s ease;
-    line-height: 1;
+    line-height: 1.5;
 }
 
-.member-login .login-btn:hover {
+.member-login-top-bar:hover {
     background-color: var(--color-light);
     color: var(--color-burgundy);
 }

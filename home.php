@@ -411,45 +411,7 @@ document.addEventListener('DOMContentLoaded', function() {
     </div>
 </section>
 
-<!-- Assessment Tools Section -->
-<section class="section assessment-tools" id="assessment-tools" style="background-color: #fff;">
-    <div class="container">
-        <h2 class="section-title" data-aos="fade-up">Immigration Assessment Tools</h2>
-        <p class="section-subtitle" data-aos="fade-up" data-aos-delay="100">Check your eligibility and prepare for your Canadian immigration journey</p>
-        
-        <div class="tools-grid">
-            <!-- Visa Eligibility Tool -->
-            <div class="tool-card" data-aos="fade-up" data-aos-delay="200">
-                <div class="tool-icon">
-                    <i class="fas fa-passport"></i>
-                </div>
-                <h3 class="tool-title">Visa Eligibility Calculator</h3>
-                <p>Quickly determine if you qualify for various Canadian immigration programs based on your profile.</p>
-                <a href="assessment-calculator/eligibility-calculator.php" class="btn btn-primary" style="margin-top: 20px;">Check Eligibility</a>
-            </div>
-            
-            <!-- CRS Calculator -->
-            <div class="tool-card" data-aos="fade-up" data-aos-delay="300">
-                <div class="tool-icon">
-                    <i class="fas fa-calculator"></i>
-                </div>
-                <h3 class="tool-title">CRS Score Calculator</h3>
-                <p>Calculate your Comprehensive Ranking System score for Express Entry applications.</p>
-                <a href="assessment-calculator/crs-score-calculator.php" class="btn btn-primary" style="margin-top: 20px;">Calculate Score</a>
-            </div>
-            
-            <!-- Study Permit Checker -->
-            <div class="tool-card" data-aos="fade-up" data-aos-delay="400">
-                <div class="tool-icon">
-                    <i class="fas fa-graduation-cap"></i>
-                </div>
-                <h3 class="tool-title">Study Permit Checker</h3>
-                <p>Verify if you meet the requirements for a Canadian study permit and what documents you'll need.</p>
-                <a href="assessment-calculator/study-permit-checker.php" class="btn btn-primary" style="margin-top: 20px;">Check Requirements</a>
-            </div>
-        </div>
-    </div>
-</section>
+
 
 <!-- Success Stories Section -->
 <section class="section success-stories" id="success-stories" style="background-color: #042167; padding: 80px 0;">
