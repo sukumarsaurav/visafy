@@ -1,7 +1,7 @@
 :root {
     --color-cream: #FFFFFF;
     --color-gold: #FFFFFF;
-    --color-red: #042167;
+    --color-red: #eaaa34;
     --color-burgundy: #042167;
     --color-dark: #333333;
     --color-light: #FFFFFF;
@@ -171,6 +171,39 @@ ul {
     font-size: 12px;
 }
 
+/* Navigation Menu Hover Effects */
+.nav-menu .nav-item > a {
+    position: relative;
+    padding: 5px 0;
+    transition: color 0.3s ease;
+}
+
+.nav-menu .nav-item > a::after {
+    content: '';
+    position: absolute;
+    width: 0;
+    height: 2px;
+    bottom: 0;
+    left: 0;
+    background-color: var(--color-burgundy);
+    transition: width 0.3s ease;
+}
+
+.nav-menu .nav-item > a:hover {
+    color: var(--color-burgundy);
+}
+
+.nav-menu .nav-item > a:hover::after {
+    width: 100%;
+}
+
+.nav-menu .nav-item:hover .dropdown-menu,
+.nav-menu .nav-item:hover .mega-menu {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0);
+}
+
 /* Dropdown Menus */
 .dropdown-menu {
     position: absolute;
@@ -215,6 +248,10 @@ ul {
     gap: 20px;
     padding: 20px;
     left: -150px;
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(10px);
+    transition: all 0.3s ease;
 }
 
 .mega-menu-item {

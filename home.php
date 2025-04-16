@@ -7,12 +7,26 @@ include('includes/header.php');
 <!-- Hero Section -->
 <section class="hero">
     <div class="container">
-        <div class="hero-content">
-            <h1 class="hero-title">Your Path to Canada Starts Here</h1>
-            <p class="hero-subtitle">Immigration Simplified</p>
-            <div class="hero-buttons">
-                <a href="assessment-tools.php" class="btn btn-primary">Check Eligibility</a>
-                <a href="contact.php" class="btn btn-secondary">Get Consultation</a>
+        <div class="hero-grid">
+            <div class="hero-content">
+                <h1 class="hero-title">Immigration Simplified For
+                    <div class="animated-text-wrapper"></div>
+                </h1>
+                <p class="hero-subtitle">Your trusted partner for Canadian immigration services</p>
+                <div class="hero-buttons">
+                    <a href="assessment-tools.php" class="btn btn-primary">Check Eligibility</a>
+                    <a href="contact.php" class="btn btn-secondary">Get Consultation</a>
+                </div>
+            </div>
+            <div class="hero-image-container">
+                <div class="floating-image">
+                    <img src="images/hero-image.png" alt="Immigration Services">
+                </div>
+                <div class="decoration-circle circle-1"></div>
+                <div class="decoration-circle circle-2"></div>
+                <div class="decoration-dot dot-1"></div>
+                <div class="decoration-dot dot-2"></div>
+                <div class="decoration-dot dot-3"></div>
             </div>
         </div>
     </div>
@@ -23,20 +37,82 @@ include('includes/header.php');
     padding: 80px 0;
     background-color: var(--color-burgundy);
     color: var(--color-light);
-    text-align: center;
+    overflow: hidden;
+    position: relative;
+}
+
+.hero-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    align-items: center;
+    gap: 50px;
 }
 
 .hero-content {
-    max-width: 800px;
-    margin: 0 auto;
-    padding: 0 20px;
+    text-align: left;
+    max-width: 600px;
 }
 
 .hero-title {
-    font-size: 3rem;
+    font-size: 3.5rem;
     font-weight: 700;
     margin-bottom: 20px;
     line-height: 1.2;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+}
+
+.animated-text-wrapper {
+    height: 60px;
+    overflow: hidden;
+    position: relative;
+    margin: 10px 0;
+}
+
+.animated-text {
+    display: block;
+    color: #eaaa34;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    position: absolute;
+    width: 100%;
+    font-weight: 700;
+    font-size: 3.5rem;
+    transform: translateY(100%);
+    opacity: 0;
+    transition: transform 0.5s ease-out, opacity 0.5s ease-out;
+}
+
+.animated-text.current {
+    transform: translateY(0);
+    opacity: 1;
+}
+
+.animated-text.exiting {
+    transform: translateY(-100%);
+    opacity: 0;
+}
+
+.animated-text.next {
+    transform: translateY(100%);
+    opacity: 0;
+}
+
+@keyframes slideUp {
+    0% {
+        transform: translateY(100%);
+        opacity: 0;
+    }
+    10% {
+        transform: translateY(0);
+        opacity: 1;
+    }
+    90% {
+        transform: translateY(0);
+        opacity: 1;
+    }
+    100% {
+        transform: translateY(-100%);
+        opacity: 0;
+    }
 }
 
 .hero-subtitle {
@@ -49,23 +125,106 @@ include('includes/header.php');
 .hero-buttons {
     display: flex;
     gap: 20px;
-    justify-content: center;
 }
 
-.hero-buttons .btn {
-    padding: 12px 30px;
-    font-size: 1.1rem;
+.hero-image-container {
+    position: relative;
+    height: 500px;
 }
 
-.hero-buttons .btn-secondary {
-    background-color: transparent;
-    border: 2px solid var(--color-light);
-    color: var(--color-light);
+.floating-image {
+    position: relative;
+    animation: float 6s ease-in-out infinite;
 }
 
-.hero-buttons .btn-secondary:hover {
-    background-color: var(--color-light);
-    color: var(--color-burgundy);
+.floating-image img {
+    max-width: 100%;
+    height: auto;
+}
+
+.decoration-circle {
+    position: absolute;
+    border-radius: 50%;
+    border: 2px solid rgba(255, 255, 255, 0.1);
+}
+
+.circle-1 {
+    width: 200px;
+    height: 200px;
+    top: 20%;
+    right: 10%;
+    animation: float 8s ease-in-out infinite;
+}
+
+.circle-2 {
+    width: 100px;
+    height: 100px;
+    bottom: 30%;
+    left: 10%;
+    animation: float 6s ease-in-out infinite;
+}
+
+.decoration-dot {
+    position: absolute;
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background-color: var(--color-gold);
+}
+
+.dot-1 {
+    top: 20%;
+    left: 20%;
+    animation: float 4s ease-in-out infinite;
+}
+
+.dot-2 {
+    top: 50%;
+    right: 15%;
+    animation: float 5s ease-in-out infinite;
+}
+
+.dot-3 {
+    bottom: 30%;
+    right: 30%;
+    animation: float 7s ease-in-out infinite;
+}
+
+@keyframes float {
+    0% {
+        transform: translateY(0);
+    }
+    50% {
+        transform: translateY(-20px);
+    }
+    100% {
+        transform: translateY(0);
+    }
+}
+
+@media (max-width: 992px) {
+    .hero-grid {
+        grid-template-columns: 1fr;
+        text-align: center;
+    }
+
+    .hero-content {
+        text-align: center;
+        margin: 0 auto;
+    }
+
+    .hero-buttons {
+        justify-content: center;
+    }
+
+    .hero-image-container {
+        height: 400px;
+        order: -1;
+    }
+
+    .hero-title {
+        font-size: 2.5rem;
+    }
 }
 
 @media (max-width: 768px) {
@@ -73,12 +232,8 @@ include('includes/header.php');
         padding: 60px 0;
     }
 
-    .hero-title {
-        font-size: 2.5rem;
-    }
-
-    .hero-subtitle {
-        font-size: 1.1rem;
+    .hero-image-container {
+        height: 300px;
     }
 
     .hero-buttons {
@@ -94,76 +249,75 @@ include('includes/header.php');
 }
 </style>
 
-<section class="section services" id="services">
-    <div class="container">
-        <h2 class="section-title" data-aos="fade-up">Our Visa Services</h2>
-        <p class="section-subtitle" data-aos="fade-up" data-aos-delay="100">Comprehensive immigration solutions tailored to your unique situation</p>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const visaTypes = [
+        'Study Permits',
+        'Work Permits',
+        'Express Entry',
+        'Provincial Nominee',
+        'Family Sponsorship',
+        'Super Visa',
+        'Visitor Visa'
+    ];
+    
+    const wrapper = document.querySelector('.animated-text-wrapper');
+    let currentIndex = 0;
+    let nextIndex = 1;
+    
+    // Create text elements
+    const currentText = document.createElement('div');
+    const nextText = document.createElement('div');
+    currentText.className = 'animated-text current';
+    nextText.className = 'animated-text next';
+    wrapper.appendChild(currentText);
+    wrapper.appendChild(nextText);
+    
+    function updateText() {
+        // Set text content
+        currentText.textContent = visaTypes[currentIndex];
+        nextText.textContent = visaTypes[nextIndex];
         
-        <div class="services-grid">
-            <!-- Study Permit -->
-            <div class="service-card" data-aos="fade-up" data-aos-delay="200">
-                <div class="service-image" style="background-image: url('images/study-visa.png')"></div>
-                <div class="service-content">
-                    <h3 class="service-title">Study Permits</h3>
-                    <p class="service-description">Pursue your educational dreams at top Canadian institutions with our expert guidance on study permit applications.</p>
-                    <a href="visa-types/Study-Permit.php" class="btn btn-secondary">Learn More</a>
-                </div>
-            </div>
-            
-            <!-- Work Permit -->
-            <div class="service-card" data-aos="fade-up" data-aos-delay="300">
-                <div class="service-image" style="background-image: url('images/work-visa.png')"></div>
-                <div class="service-content">
-                    <h3 class="service-title">Work Permits</h3>
-                    <p class="service-description">Advance your career in Canada with our specialized assistance for work permit applications and employer connections.</p>
-                    <a href="visa-types/Work-Permit.php" class="btn btn-secondary">Learn More</a>
-                </div>
-            </div>
-            
-            <!-- Express Entry -->
-            <div class="service-card" data-aos="fade-up" data-aos-delay="400">
-                <div class="service-image" style="background-image: url('images/express-entry.png')"></div>
-                <div class="service-content">
-                    <h3 class="service-title">Express Entry</h3>
-                    <p class="service-description">Fast-track your permanent residency through Canada's Express Entry system with our proven strategies.</p>
-                    <a href="visa-types/Express-Entry-visa.php" class="btn btn-secondary">Learn More</a>
-                </div>
-            </div>
-            
-            <!-- Provincial Nominee -->
-            <div class="service-card" data-aos="fade-up" data-aos-delay="500">
-                <div class="service-image" style="background-image: url('images/pro.png')"></div>
-                <div class="service-content">
-                    <h3 class="service-title">Provincial Nominee</h3>
-                    <p class="service-description">Leverage provincial immigration programs tailored to specific regions' needs and boost your chances of permanent residence.</p>
-                    <a href="visa-types/Provincial-Nominee.php" class="btn btn-secondary">Learn More</a>
-                </div>
-            </div>
-            
-            <!-- Family Sponsorship -->
-            <div class="service-card" data-aos="fade-up" data-aos-delay="600">
-                <div class="service-image" style="background-image: url('images/family-sponsership.png')"></div>
-                <div class="service-content">
-                    <h3 class="service-title">Family Sponsorship</h3>
-                    <p class="service-description">Reunite with your loved ones by sponsoring family members for Canadian permanent residence with our expert guidance.</p>
-                    <a href="visa-types/Family-Sponsorship.php" class="btn btn-secondary">Learn More</a>
-                </div>
-            </div>
-            
-            <!-- Visitor Visa -->
-            <div class="service-card" data-aos="fade-up" data-aos-delay="700">
-                <div class="service-image" style="background-image: url('images/visitor-visa.png')"></div>
-                <div class="service-content">
-                    <h3 class="service-title">Visitor Visa</h3>
-                    <p class="service-description">Visit Canada for tourism, business meetings, or family visits with our comprehensive visitor visa application support.</p>
-                    <a href="visa-types/Visitor-Visa.php" class="btn btn-secondary">Learn More</a>
-                </div>
-            </div>
-        </div>
+        // Start animation
+        currentText.classList.add('exiting');
+        currentText.classList.remove('current');
         
-       
-    </div>
-</section>
+        nextText.classList.add('current');
+        nextText.classList.remove('next');
+        
+        // After animation completes
+        setTimeout(() => {
+            // Reset the exiting text for next animation
+            currentText.classList.remove('exiting');
+            currentText.classList.add('next');
+            
+            // Update indices
+            currentIndex = nextIndex;
+            nextIndex = (nextIndex + 1) % visaTypes.length;
+            
+            // Prepare elements for next animation
+            currentText.style.transition = 'none';
+            currentText.style.transform = 'translateY(100%)';
+            
+            // Force reflow
+            currentText.offsetHeight;
+            
+            // Re-enable transitions
+            currentText.style.transition = '';
+            
+            // Swap elements
+            [currentText, nextText] = [nextText, currentText];
+        }, 500);
+    }
+    
+    // Initial text setup
+    currentText.textContent = visaTypes[0];
+    nextText.textContent = visaTypes[1];
+    
+    // Start the animation loop
+    setInterval(updateText, 3000);
+});
+</script>
 
 <!-- Why Choose Us Section -->
 <section class="section why-us" style="background-color: var(--color-gold);">
