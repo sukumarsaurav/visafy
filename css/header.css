@@ -37,11 +37,14 @@
     .contact-info a {
         color: #fff;
         text-decoration: none;
-        font-size: 14px;
+        font-size: 12px;
         display: flex;
         align-items: center;
         gap: 8px;
         transition: color 0.3s ease;
+    }
+    .contact-info-top-bar{
+        font-size:14px;
     }
     
     .contact-info a:hover {
@@ -306,6 +309,26 @@ ul {
 
     .dropdown-item {
         padding: 10px 40px;
+    }
+}
+
+@media (max-width: 991px) {
+    .consultation-btn {
+        display: none;
+    }
+}
+
+@media (max-width: 768px) {
+    .header-actions .btn {
+        display: none;
+    }
+    
+    .mega-menu {
+        grid-template-columns: 1fr;
+    }
+    
+    .mega-menu-consultation {
+        grid-column: span 1;
     }
 }
 
