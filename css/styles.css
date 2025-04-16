@@ -2,12 +2,16 @@
 
 /* Variables for color scheme */
 :root {
+    --color-primary: #042167;
+    --color-secondary: #eaaa34;
+    --color-light: #ffffff;
+    --color-dark: #333333;
+    --color-gray: #666666;
+    --color-light-gray: #f5f5f5;
     --color-cream: #FEF9E1;
     --color-gold: #eef8ff;
     --color-red: #eaaa34;
     --color-burgundy: #042167;
-    --color-dark: #333333;
-    --color-light: #FFFFFF;
     --font-primary: 'Montserrat', sans-serif;
     --font-secondary: 'Lora', serif;
 }
@@ -28,18 +32,37 @@ body {
     font-size: 16px;
     line-height: 1.6;
     color: var(--color-dark);
-    background-color: var(--color-cream);
+    background-color: var(--color-light);
     overflow-x: hidden;
+    padding-top: 0; /* Remove any top padding */
+}
+
+/* Adjust main content for sticky header */
+.main-content {
+    position: relative;
+    z-index: 1;
+}
+
+/* Hero Section adjustment */
+.hero {
+    margin-top: 0;
+    min-height: 60vh;
+    display: flex;
+    align-items: center;
+    background-color: #042167;
+    color: var(--color-light);
+    position: relative;
+    overflow: hidden;
 }
 
 a {
     text-decoration: none;
-    color: var(--color-burgundy);
-    transition: all 0.3s ease;
+    color: var(--color-primary);
+    transition: color 0.3s ease;
 }
 
 a:hover {
-    color: var(--color-red);
+    color: var(--color-secondary);
 }
 
 ul, ol {
@@ -53,19 +76,21 @@ img {
 
 .container {
     width: 100%;
-    max-width: 1200px;
+    max-width: 1600px;
     margin: 0 auto;
     padding: 0 15px;
 }
 
+/* Adjust section padding for smooth scrolling with sticky header */
 .section {
     padding: 80px 0;
+    scroll-margin-top: 80px; /* This helps with smooth scrolling to sections */
 }
 
 .section-title {
     font-family: var(--font-secondary);
     font-size: 2.5rem;
-    color: var(--color-burgundy);
+    color: var(--color-primary);
     margin-bottom: 20px;
     text-align: center;
     position: relative;
@@ -76,60 +101,50 @@ img {
     display: block;
     width: 80px;
     height: 3px;
-    background: var(--color-red);
+    background: var(--color-secondary);
     margin: 15px auto;
 }
 
 .section-subtitle {
     font-size: 1.1rem;
+    color: var(--color-gray);
     text-align: center;
     margin-bottom: 50px;
-    color: var(--color-dark);
+    max-width: 800px;
+    margin-left: auto;
+    margin-right: auto;
 }
 
 /* Button Styles */
 .btn {
-    display: inline-block;
     padding: 12px 30px;
     border-radius: 5px;
     font-weight: 600;
-    text-transform: uppercase;
-    font-size: 14px;
-    letter-spacing: 1px;
+    text-decoration: none;
+    display: inline-block;
     transition: all 0.3s ease;
-    border: none;
-    cursor: pointer;
 }
 
 .btn-primary {
-    background-color: var(--color-burgundy);
+    background-color: var(--color-secondary);
     color: var(--color-light);
+    border: 2px solid var(--color-secondary);
 }
 
 .btn-primary:hover {
-    background-color: var(--color-red);
-    color: var(--color-light);
+    background-color: transparent;
+    color: var(--color-secondary);
 }
 
 .btn-secondary {
     background-color: transparent;
-    color: var(--color-burgundy);
-    border: 2px solid var(--color-burgundy);
+    color: var(--color-secondary);
+    border: 2px solid var(--color-secondary);
 }
 
 .btn-secondary:hover {
-    background-color: var(--color-burgundy);
+    background-color: var(--color-secondary);
     color: var(--color-light);
-}
-
-
-/* Hero Section */
-.hero {
-    height: 60vh;
-    display: flex;
-    align-items: center;
-    color: var(--color-light);
-    
 }
 
 .hero-content {
@@ -190,7 +205,7 @@ img {
 }
 
 .service-title {
-    color: var(--color-burgundy);
+    color: var(--color-primary);
     margin-bottom: 15px;
     font-size: 1.5rem;
 }
@@ -220,12 +235,12 @@ img {
 
 .tool-icon {
     font-size: 3rem;
-    color: var(--color-burgundy);
+    color: var(--color-primary);
     margin-bottom: 20px;
 }
 
 .tool-title {
-    color: var(--color-burgundy);
+    color: var(--color-primary);
     margin-bottom: 15px;
     font-size: 1.3rem;
 }
@@ -263,12 +278,12 @@ img {
 }
 
 .story-client {
-    color: var(--color-burgundy);
+    color: var(--color-primary);
     font-weight: 600;
 }
 
 .story-visa-type {
-    color: var(--color-red);
+    color: var(--color-secondary);
     font-size: 0.9rem;
 }
 
@@ -299,14 +314,14 @@ img {
 }
 
 .contact-icon {
-    color: var(--color-burgundy);
+    color: var(--color-primary);
     font-size: 1.2rem;
     margin-right: 15px;
     margin-top: 5px;
 }
 
 .contact-details h4 {
-    color: var(--color-burgundy);
+    color: var(--color-primary);
     margin-bottom: 5px;
 }
 
@@ -317,7 +332,7 @@ img {
 .contact-form label {
     display: block;
     margin-bottom: 8px;
-    color: var(--color-burgundy);
+    color: var(--color-primary);
     font-weight: 500;
 }
 
@@ -339,7 +354,7 @@ img {
 
 /* Footer */
 .footer {
-    background-color: var(--color-burgundy);
+    background-color: var(--color-primary);
     color: var(--color-light);
     padding: 50px 0 20px;
 }
@@ -401,7 +416,7 @@ img {
 
 .social-links a:hover {
     background-color: var(--color-gold);
-    color: var(--color-burgundy);
+    color: var(--color-primary);
     transform: translateY(-3px);
 }
 
@@ -521,3 +536,87 @@ img {
     color: #6c757d;
     line-height: 1.4;
 }  */
+
+/* Global Styles */
+body {
+    color: var(--color-dark);
+}
+
+/* Card Styles */
+.card {
+    background: var(--color-light);
+    border-radius: 10px;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+    transition: transform 0.3s ease;
+}
+
+.card:hover {
+    transform: translateY(-5px);
+}
+
+/* Form Styles */
+.form-group {
+    margin-bottom: 20px;
+}
+
+input:focus, 
+textarea:focus, 
+select:focus {
+    border-color: var(--color-secondary);
+    outline: none;
+}
+
+/* Background Colors */
+.bg-primary {
+    background-color: var(--color-primary);
+    color: var(--color-light);
+}
+
+.bg-secondary {
+    background-color: var(--color-secondary);
+    color: var(--color-light);
+}
+
+.bg-light {
+    background-color: var(--color-light);
+}
+
+.bg-dark {
+    background-color: var(--color-dark);
+    color: var(--color-light);
+}
+
+/* Text Colors */
+.text-primary {
+    color: var(--color-primary);
+}
+
+.text-secondary {
+    color: var(--color-secondary);
+}
+
+.text-light {
+    color: var(--color-light);
+}
+
+.text-dark {
+    color: var(--color-dark);
+}
+
+/* Icon Colors */
+.icon-primary {
+    color: var(--color-primary);
+}
+
+.icon-secondary {
+    color: var(--color-secondary);
+}
+
+/* Border Colors */
+.border-primary {
+    border-color: var(--color-primary);
+}
+
+.border-secondary {
+    border-color: var(--color-secondary);
+}
