@@ -1,0 +1,21 @@
+Develop a comprehensive website for an immigration consultancy specializing in Canadian visas, with a focus on user experience and information accuracy. The website should cater to various visa types, including study, work, and other categories, providing detailed information and resources for potential applicants.
+
+Key features to include:
+
+Visa Information Pages:
+
+Dedicated pages for each visa type, offering in-depth details. Eligibility criteria for each visa. A comprehensive list of required documents. Estimated processing times. Showcase successful applicant stories. Assessment Tools:
+
+An interactive visa eligibility calculator. A tool to calculate the Comprehensive Ranking System (CRS) score for Express Entry. A study permit requirements checker. Resource Center:
+
+Up-to-date immigration news and updates. Guides and tutorials to assist applicants. A frequently asked questions (FAQ) section. A blog featuring articles about life in Canada. Booking System:
+
+An online consultation scheduling system. A secure document upload portal. A system for clients to track their application progress. Contact and Support:
+
+A contact form for inquiries. Live chat support for immediate assistance. Display of office locations and contact details. Business hours information. Technical and Design Requirements:
+
+Implement a responsive design to ensure optimal viewing on all devices. Integrate multilingual support to cater to a global audience. Include testimonials and success stories to build trust. Integrate a secure payment gateway for consultation fees. Implement search engine optimization (SEO) best practices to improve website visibility.
+
+tech stack 
+use  html css js php mysql  aos animation 
+do not use bootstrap cuse custom css and class name according to sectionand page
