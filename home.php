@@ -9,14 +9,91 @@ include('includes/header.php');
     <div class="container">
         <div class="hero-content">
             <h1 class="hero-title">Your Path to Canada Starts Here</h1>
-            <p class="hero-subtitle">We provide expert guidance and support for all your Canadian immigration needs, with personalized solutions for study permits, work visas, and permanent residency applications.</p>
+            <p class="hero-subtitle">Immigration Simplified</p>
             <div class="hero-buttons">
                 <a href="assessment-tools.php" class="btn btn-primary">Check Eligibility</a>
-                <a href="contact.php" class="btn btn-secondary">Free Consultation</a>
+                <a href="contact.php" class="btn btn-secondary">Get Consultation</a>
             </div>
         </div>
     </div>
 </section>
+
+<style>
+.hero {
+    padding: 80px 0;
+    background-color: var(--color-burgundy);
+    color: var(--color-light);
+    text-align: center;
+}
+
+.hero-content {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 0 20px;
+}
+
+.hero-title {
+    font-size: 3rem;
+    font-weight: 700;
+    margin-bottom: 20px;
+    line-height: 1.2;
+}
+
+.hero-subtitle {
+    font-size: 1.2rem;
+    margin-bottom: 30px;
+    line-height: 1.6;
+    opacity: 0.9;
+}
+
+.hero-buttons {
+    display: flex;
+    gap: 20px;
+    justify-content: center;
+}
+
+.hero-buttons .btn {
+    padding: 12px 30px;
+    font-size: 1.1rem;
+}
+
+.hero-buttons .btn-secondary {
+    background-color: transparent;
+    border: 2px solid var(--color-light);
+    color: var(--color-light);
+}
+
+.hero-buttons .btn-secondary:hover {
+    background-color: var(--color-light);
+    color: var(--color-burgundy);
+}
+
+@media (max-width: 768px) {
+    .hero {
+        padding: 60px 0;
+    }
+
+    .hero-title {
+        font-size: 2.5rem;
+    }
+
+    .hero-subtitle {
+        font-size: 1.1rem;
+    }
+
+    .hero-buttons {
+        flex-direction: column;
+        gap: 15px;
+    }
+
+    .hero-buttons .btn {
+        width: 100%;
+        max-width: 300px;
+        margin: 0 auto;
+    }
+}
+</style>
+
 <section class="section services" id="services">
     <div class="container">
         <h2 class="section-title" data-aos="fade-up">Our Visa Services</h2>

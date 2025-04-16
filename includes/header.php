@@ -70,13 +70,30 @@ $base = isset($base_path) ? $base_path : $base_url;
     <script src="<?php echo $base; ?>/js/resources.js" defer></script>
 </head>
 <body>
+    <!-- Top Navbar -->
+    <div class="top-navbar">
+        <div class="container">
+            <div class="top-navbar-content">
+                <div class="contact-info-top-bar">
+                    <a href="mailto:info@canext.com" class="top-bar-link"><i class="fas fa-envelope"></i> info@canext.com</a>
+                    <a href="tel:+16472267436" class="top-bar-link"><i class="fas fa-phone"></i> +1 (647) 226-7436</a>
+                </div>
+                <div class="member-login-top-bar">
+                    <a href="/member-login.php" class="login-btn-top"><i class="fas fa-user"></i> Member Login</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- Drawer Overlay -->
     <div class="drawer-overlay"></div>
     
     <!-- Side Drawer -->
     <div class="side-drawer">
         <div class="drawer-header">
-            <a href="<?php echo $base; ?>/index.php" class="drawer-logo">CANEXT</a>
+            <a href="<?php echo $base; ?>/index.php" class="drawer-logo">
+                <img src="<?php echo $base; ?>/images/logo-Visafy-light.png" alt="Visafy Logo" class="mobile-logo">
+            </a>
             <button class="drawer-close"><i class="fas fa-times"></i></button>
         </div>
         <nav class="drawer-nav">
@@ -165,101 +182,104 @@ $base = isset($base_path) ? $base_path : $base_url;
     <!-- Header Section -->
     <header class="header">
         <div class="container header-container">
-        <button class="mobile-menu-toggle">
-                    <i class="fas fa-bars"></i>
-                </button>
+            <!-- Logo -->
             <div class="logo">
-                <a href="<?php echo $base; ?>/index.php">
-                    <!-- <img src="<?php echo $base_url; ?>/images/logo.png" alt="CANEXT Immigration Consultancy Logo"> -->
-                    <span class="logo-text">CANEXT</span>
+                <a href="/index.php">
+                    <img src="/images/logo-Visafy-light.png" alt="Visafy Logo" class="desktop-logo">
                 </a>
             </div>
             
-            <nav>
-                <ul class="nav-menu">
-                    <li class="nav-item">
-                        <a href="<?php echo $base; ?>/visas.php">Visa Services <i class="fas fa-chevron-down"></i></a>
-                        <div class="dropdown-menu mega-menu">
-                            <a href="<?php echo $base; ?>/visa-types/Study-Permit.php" class="mega-menu-item">
-                                <h4 class="mega-menu-title">Study Permit</h4>
-                                <p class="mega-menu-description">Information for international students looking to study in Canada</p>
-                            </a>
-                            <a href="<?php echo $base; ?>/visa-types/Work-Permit.php" class="mega-menu-item">
-                                <h4 class="mega-menu-title">Work Permit</h4>
-                                <p class="mega-menu-description">Guidance for those seeking employment opportunities in Canada</p>
-                            </a>
-                            <a href="<?php echo $base; ?>/visa-types/Express-Entry-visa.php" class="mega-menu-item">
-                                <h4 class="mega-menu-title">Express Entry</h4>
-                                <p class="mega-menu-description">Fast-track immigration for skilled workers and professionals</p>
-                            </a>
-                            <a href="<?php echo $base; ?>/visa-types/Family-Sponsorship.php" class="mega-menu-item">
-                                <h4 class="mega-menu-title">Family Sponsorship</h4>
-                                <p class="mega-menu-description">Reunite with your family members in Canada</p>
-                            </a>
-                            <a href="<?php echo $base; ?>/visa-types/Provincial-Nominee.php" class="mega-menu-item">
-                                <h4 class="mega-menu-title">Provincial Nominee</h4>
-                                <p class="mega-menu-description">Immigration programs tailored to provincial needs</p>
-                            </a>
-                            <a href="<?php echo $base; ?>/visa-types/Visitor-Visa.php" class="mega-menu-item">
-                                <h4 class="mega-menu-title">Visitor Visa</h4>
-                                <p class="mega-menu-description">Visit Canada for tourism, business, or family visits</p>
-                            </a>
-                            <div class="mega-menu-consultation">
-                                <h4>Need Immigration Assistance?</h4>
-                                <p>Our experts are ready to help with your visa application process.</p>
-                                <a href="<?php echo $base; ?>/Book-Consultation.php" class="btn btn-primary">Book a Consultation</a>
+            <!-- Right Side Navigation and Button -->
+            <div class="header-right">
+                <nav class="main-nav">
+                    <ul class="nav-menu">
+                        <li class="nav-item">
+                            <a href="<?php echo $base; ?>/visas.php">Visa Services <i class="fas fa-chevron-down"></i></a>
+                            <div class="dropdown-menu mega-menu">
+                                <a href="<?php echo $base; ?>/visa-types/Study-Permit.php" class="mega-menu-item">
+                                    <h4 class="mega-menu-title">Study Permit</h4>
+                                    <p class="mega-menu-description">Information for international students looking to study in Canada</p>
+                                </a>
+                                <a href="<?php echo $base; ?>/visa-types/Work-Permit.php" class="mega-menu-item">
+                                    <h4 class="mega-menu-title">Work Permit</h4>
+                                    <p class="mega-menu-description">Guidance for those seeking employment opportunities in Canada</p>
+                                </a>
+                                <a href="<?php echo $base; ?>/visa-types/Express-Entry-visa.php" class="mega-menu-item">
+                                    <h4 class="mega-menu-title">Express Entry</h4>
+                                    <p class="mega-menu-description">Fast-track immigration for skilled workers and professionals</p>
+                                </a>
+                                <a href="<?php echo $base; ?>/visa-types/Family-Sponsorship.php" class="mega-menu-item">
+                                    <h4 class="mega-menu-title">Family Sponsorship</h4>
+                                    <p class="mega-menu-description">Reunite with your family members in Canada</p>
+                                </a>
+                                <a href="<?php echo $base; ?>/visa-types/Provincial-Nominee.php" class="mega-menu-item">
+                                    <h4 class="mega-menu-title">Provincial Nominee</h4>
+                                    <p class="mega-menu-description">Immigration programs tailored to provincial needs</p>
+                                </a>
+                                <a href="<?php echo $base; ?>/visa-types/Visitor-Visa.php" class="mega-menu-item">
+                                    <h4 class="mega-menu-title">Visitor Visa</h4>
+                                    <p class="mega-menu-description">Visit Canada for tourism, business, or family visits</p>
+                                </a>
+                                <div class="mega-menu-consultation">
+                                    <h4>Need Immigration Assistance?</h4>
+                                    <p>Our experts are ready to help with your visa application process.</p>
+                                    <a href="<?php echo $base; ?>/Book-Consultation.php" class="btn btn-primary">Book a Consultation</a>
+                                </div>
                             </div>
-                        </div>
-                    </li>
-                    <li class="nav-item">
-                        <a href="<?php echo $base; ?>/assessment-tools.php">Assessment Tools <i class="fas fa-chevron-down"></i></a>
-                        <div class="dropdown-menu">
-                            <a href="<?php echo $base; ?>/assessment-calculator/eligibility-calculator.php" class="dropdown-item">
-                                <div class="mega-menu-title">Eligibility Calculator</div>
-                                <div class="mega-menu-description">Check if you qualify for Canadian immigration programs</div>
-                            </a>
-                            <a href="<?php echo $base; ?>/assessment-calculator/crs-score-calculator.php" class="dropdown-item">
-                                <div class="mega-menu-title">CRS Score Calculator</div>
-                                <div class="mega-menu-description">Calculate your Comprehensive Ranking System score for Express Entry</div>
-                            </a>
-                            <a href="<?php echo $base; ?>/assessment-calculator/study-permit-checker.php" class="dropdown-item">
-                                <div class="mega-menu-title">Study Permit Checker</div>
-                                <div class="mega-menu-description">Verify your eligibility for a Canadian study permit</div>
-                            </a>
-                            <a href="<?php echo $base; ?>/assessment-calculator/immigration-pathway-calculator.php" class="dropdown-item">
-                                <div class="mega-menu-title">Immigration Pathway Calculator</div>
-                                <div class="mega-menu-description">Find your ideal pathway to Canada based on your circumstances</div>
-                            </a>
-                        </div>
-                    </li>
-                    <li class="nav-item">
-                        <a href="<?php echo $base; ?>/resources.php">Resources <i class="fas fa-chevron-down"></i></a>
-                        <div class="dropdown-menu">
-                            <a href="<?php echo $base; ?>/resources/immigration-news.php" class="dropdown-item">
-                                <div class="mega-menu-title">Immigration News</div>
-                                <div class="mega-menu-description">Latest updates on Canadian immigration policies and programs</div>
-                            </a>
-                            <a href="<?php echo $base; ?>/resources/guides-tutorials.php" class="dropdown-item">
-                                <div class="mega-menu-title">Guides & Tutorials</div>
-                                <div class="mega-menu-description">Step-by-step guides to help you through the immigration process</div>
-                            </a>
-                            <a href="<?php echo $base; ?>/resources/faq.php" class="dropdown-item">
-                                <div class="mega-menu-title">FAQ</div>
-                                <div class="mega-menu-description">Answers to commonly asked questions about Canadian immigration</div>
-                            </a>
-                            <a href="<?php echo $base; ?>/resources/blog.php" class="dropdown-item">
-                                <div class="mega-menu-title">Blog</div>
-                                <div class="mega-menu-description">Articles about life in Canada and immigration experiences</div>
-                            </a>
-                        </div>
-                    </li>
-                    <li class="nav-item"><a href="<?php echo $base; ?>/contact.php">Contact</a></li>
-                </ul>
-            </nav>
-            
-            <div class="header-actions book-button">
-                <a href="<?php echo $base; ?>/consultant.php" class="btn btn-primary">Book Consultation</a>
-               
+                        </li>
+                        <li class="nav-item">
+                            <a href="<?php echo $base; ?>/assessment-tools.php">Assessment Tools <i class="fas fa-chevron-down"></i></a>
+                            <div class="dropdown-menu">
+                                <a href="<?php echo $base; ?>/assessment-calculator/eligibility-calculator.php" class="dropdown-item">
+                                    <div class="mega-menu-title">Eligibility Calculator</div>
+                                    <div class="mega-menu-description">Check if you qualify for Canadian immigration programs</div>
+                                </a>
+                                <a href="<?php echo $base; ?>/assessment-calculator/crs-score-calculator.php" class="dropdown-item">
+                                    <div class="mega-menu-title">CRS Score Calculator</div>
+                                    <div class="mega-menu-description">Calculate your Comprehensive Ranking System score for Express Entry</div>
+                                </a>
+                                <a href="<?php echo $base; ?>/assessment-calculator/study-permit-checker.php" class="dropdown-item">
+                                    <div class="mega-menu-title">Study Permit Checker</div>
+                                    <div class="mega-menu-description">Verify your eligibility for a Canadian study permit</div>
+                                </a>
+                                <a href="<?php echo $base; ?>/assessment-calculator/immigration-pathway-calculator.php" class="dropdown-item">
+                                    <div class="mega-menu-title">Immigration Pathway Calculator</div>
+                                    <div class="mega-menu-description">Find your ideal pathway to Canada based on your circumstances</div>
+                                </a>
+                            </div>
+                        </li>
+                        <li class="nav-item">
+                            <a href="<?php echo $base; ?>/resources.php">Resources <i class="fas fa-chevron-down"></i></a>
+                            <div class="dropdown-menu">
+                                <a href="<?php echo $base; ?>/resources/immigration-news.php" class="dropdown-item">
+                                    <div class="mega-menu-title">Immigration News</div>
+                                    <div class="mega-menu-description">Latest updates on Canadian immigration policies and programs</div>
+                                </a>
+                                <a href="<?php echo $base; ?>/resources/guides-tutorials.php" class="dropdown-item">
+                                    <div class="mega-menu-title">Guides & Tutorials</div>
+                                    <div class="mega-menu-description">Step-by-step guides to help you through the immigration process</div>
+                                </a>
+                                <a href="<?php echo $base; ?>/resources/faq.php" class="dropdown-item">
+                                    <div class="mega-menu-title">FAQ</div>
+                                    <div class="mega-menu-description">Answers to commonly asked questions about Canadian immigration</div>
+                                </a>
+                                <a href="<?php echo $base; ?>/resources/blog.php" class="dropdown-item">
+                                    <div class="mega-menu-title">Blog</div>
+                                    <div class="mega-menu-description">Articles about life in Canada and immigration experiences</div>
+                                </a>
+                            </div>
+                        </li>
+                        <li class="nav-item"><a href="<?php echo $base; ?>/contact.php">Contact</a></li>
+                    </ul>
+                </nav>
+                
+                <div class="consultation-btn">
+                    <a href="/consultant.php" class="btn btn-primary">Book Consultation</a>
+                </div>
+                
+                <button class="mobile-menu-toggle">
+                    <i class="fas fa-bars"></i>
+                </button>
             </div>
         </div>
     </header>

@@ -10,7 +10,81 @@
 }
 
 /* Reset and Base Styles */
-*, *::before, *::after {
+*, *::before, *::after {/* Top Navbar */
+    .top-navbar {
+        background-color: var(--color-burgundy);
+        height: 40px;
+        display: flex;
+        align-items: center;
+    }
+    
+    .top-navbar-content {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        width: 100%;
+    }
+    
+    .contact-info-top-bar {
+        display: flex;
+        gap: 24px;
+        align-items: center;
+    }
+    
+    .top-bar-link {
+        color: var(--color-light);
+        text-decoration: none;
+        font-size: 14px;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        white-space: nowrap;
+    }
+    
+    /* Header Layout */
+    .header-container {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        height: 80px;
+        padding: 0 15px;
+    }
+    
+    .header-right {
+        display: flex;
+        align-items: center;
+        gap: 32px;
+    }
+    
+    .main-nav {
+        display: flex;
+        align-items: center;
+    }
+    
+    .consultation-btn {
+        margin-left: 16px;
+    }
+    
+    /* Responsive */
+    @media (max-width: 992px) {
+        .main-nav {
+            display: none;
+        }
+        
+        .header-right {
+            gap: 20px;
+        }
+    }
+    
+    @media (max-width: 768px) {
+        .contact-info-top-bar {
+            display: none;
+        }
+        
+        .top-navbar-content {
+            justify-content: flex-end;
+        }
+    }
     margin: 0;
     padding: 0;
     box-sizing: border-box;
@@ -53,11 +127,11 @@ ul {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    height: 80px;
+    height: 70px;
 }
 
 .logo {
-    margin-right: 30px;
+    margin-right: 0;
 }
 
 .logo-text {
@@ -69,14 +143,13 @@ ul {
 /* Desktop Navigation */
 .nav-menu {
     display: flex;
-    list-style: none;
+    gap: 25px;
     margin: 0;
     padding: 0;
 }
 
 .nav-item {
     position: relative;
-    margin-right: 20px;
 }
 
 .nav-item > a {
@@ -216,7 +289,7 @@ ul {
 }
 
 .book-button {
-    margin-left: auto;
+    margin-left: 0;
 }
 
 /* Mobile Menu Toggle */
@@ -353,16 +426,25 @@ ul {
 
 /* Responsive Styles */
 @media (max-width: 992px) {
+    .header-right {
+        gap: 15px;
+    }
+    
     nav {
         display: none;
     }
     
     .mobile-menu-toggle {
         display: block;
+        order: 1;
     }
     
-    .header-container {
-        justify-content: space-between;
+    .logo {
+        order: 2;
+    }
+    
+    .header-actions {
+        order: 3;
     }
     
     .mega-menu {
@@ -382,5 +464,109 @@ ul {
     
     .mega-menu-consultation {
         grid-column: span 1;
+    }
+}
+
+/* Top Navbar Styles */
+.top-navbar {
+    background-color: var(--color-burgundy);
+    padding: 4px 0;
+    color: var(--color-light);
+}
+
+.top-navbar-content {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    height: 24px;
+}
+
+.contact-info {
+    display: flex;
+    gap: 20px;
+    align-items: center;
+}
+
+.contact-info a {
+    color: var(--color-light);
+    text-decoration: none;
+    font-size: 13px;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    line-height: 1;
+}
+
+.contact-info a:hover {
+    color: var(--color-gold);
+}
+
+.member-login {
+    display: flex;
+    align-items: center;
+    height: 100%;
+}
+
+.member-login .login-btn {
+    color: var(--color-light);
+    text-decoration: none;
+    font-size: 13px;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    padding: 3px 12px;
+    border: 1px solid var(--color-light);
+    border-radius: 4px;
+    transition: all 0.3s ease;
+    line-height: 1;
+}
+
+.member-login .login-btn:hover {
+    background-color: var(--color-light);
+    color: var(--color-burgundy);
+}
+
+/* Logo Styles */
+.logo img.desktop-logo {
+    height: 40px;
+    width: auto;
+}
+
+.drawer-logo img.mobile-logo {
+    height: 35px;
+    width: auto;
+}
+
+/* Responsive Styles */
+@media screen and (max-width: 768px) {
+    .contact-info {
+        display: none;
+    }
+    
+    .top-navbar-content {
+        justify-content: flex-end;
+    }
+    
+    .logo {
+        order: 2;
+        margin-left: auto;
+    }
+    
+    .mobile-menu-toggle {
+        order: 1;
+    }
+    
+    .header-actions {
+        order: 3;
+    }
+}
+
+@media screen and (max-width: 480px) {
+    .member-login .login-btn span {
+        display: none;
+    }
+    
+    .member-login .login-btn {
+        padding: 5px 10px;
     }
 }
