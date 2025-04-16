@@ -1,5 +1,5 @@
 <?php
-$page_title = "CANEXT | Canadian Immigration Consultancy";
+$page_title = "Visafy | Canadian Immigration Consultancy";
 include('includes/header.php');
 ?>
 
@@ -12,7 +12,7 @@ include('includes/header.php');
                 <h1 class="hero-title">Immigration Simplified For
                     <div class="animated-text-wrapper"></div>
                 </h1>
-                <p class="hero-subtitle">Your trusted partner for Canadian immigration services</p>
+                <p class="hero-subtitle">Your trusted partner for immigration services</p>
                 <div class="hero-buttons">
                     <a href="assessment-tools.php" class="btn btn-primary">Check Eligibility</a>
                     <a href="contact.php" class="btn btn-secondary">Get Consultation</a>
@@ -20,13 +20,50 @@ include('includes/header.php');
             </div>
             <div class="hero-image-container">
                 <div class="floating-image">
-                    <img src="images/plane.png" alt="Immigration Services">
+                    <img src="images/9.png" alt="Immigration Services">
                 </div>
-                <div class="decoration-circle circle-1"></div>
-                <div class="decoration-circle circle-2"></div>
-                <div class="decoration-dot dot-1"></div>
-                <div class="decoration-dot dot-2"></div>
-                <div class="decoration-dot dot-3"></div>
+               
+
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Services Section -->
+<section class="section services" style="padding: 80px 0; background-color: #f8f9fa;">
+    <div class="container">
+        <h2 class="section-title" data-aos="fade-up">Our Services</h2>
+        <p class="section-subtitle" data-aos="fade-up" data-aos-delay="100">Choose the assistance level that best suits your needs</p>
+        
+        <div class="services-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 30px; margin-top: 50px;">
+            <!-- DIY Card -->
+            <div class="service-card" data-aos="fade-up" data-aos-delay="200" style="background: #fff; padding: 40px 30px; border-radius: 10px; box-shadow: 0 5px 15px rgba(0,0,0,0.05); text-align: center; transition: transform 0.3s ease;">
+                <div class="service-icon" style="font-size: 3rem; color: #eaaa34; margin-bottom: 20px;">
+                    <i class="fas fa-tasks"></i>
+                </div>
+                <h3 style="color: #042167; margin-bottom: 15px; font-size: 1.5rem;">Eligibility Check </h3>
+                <p style="color: #666; margin-bottom: 25px; line-height: 1.6;">Use our self-assessment tools to check your eligibility for various Canadian immigration programs at your own pace.</p>
+                <a href="assessment-tools.php" class="btn btn-primary" style="display: inline-block; padding: 10px 25px; border-radius: 5px; transition: all 0.3s ease;">Start Assessment</a>
+            </div>
+            
+            <!-- Self-Assistance Card -->
+            <div class="service-card" data-aos="fade-up" data-aos-delay="300" style="background: #fff; padding: 40px 30px; border-radius: 10px; box-shadow: 0 5px 15px rgba(0,0,0,0.05); text-align: center; transition: transform 0.3s ease;">
+                <div class="service-icon" style="font-size: 3rem; color: #eaaa34; margin-bottom: 20px;">
+                    <i class="fas fa-user-check"></i>
+                </div>
+                <h3 style="color: #042167; margin-bottom: 15px; font-size: 1.5rem;">Self-Assistance (DIY)</h3>
+                <p style="color: #666; margin-bottom: 25px; line-height: 1.6;">Get guidance and resources to manage your immigration process with occasional expert support when needed.</p>
+                <a href="self-assistance.php" class="btn btn-primary" style="display: inline-block; padding: 10px 25px; border-radius: 5px; transition: all 0.3s ease;">Learn More</a>
+            </div>
+            
+            <!-- Complete Assistance Card -->
+            <div class="service-card" data-aos="fade-up" data-aos-delay="400" style="background: #fff; padding: 40px 30px; border-radius: 10px; box-shadow: 0 5px 15px rgba(0,0,0,0.05); text-align: center; transition: transform 0.3s ease;">
+                <div class="service-icon" style="font-size: 3rem; color: #eaaa34; margin-bottom: 20px;">
+                    <i class="fas fa-star"></i>
+                </div>
+                <h3 style="color: #042167; margin-bottom: 15px; font-size: 1.5rem;">Complete Assistance</h3>
+                <p style="color: #666; margin-bottom: 25px; line-height: 1.6;">Full end-to-end support with dedicated immigration consultants managing your entire application process.</p>
+                <a href="complete-assistance.php" class="btn btn-primary" style="display: inline-block; padding: 10px 25px; border-radius: 5px; transition: all 0.3s ease;">Get Started</a>
             </div>
         </div>
     </div>
@@ -43,14 +80,14 @@ include('includes/header.php');
 
 .hero-grid {
     display: grid;
-    grid-template-columns: 1fr 1fr;
+    grid-template-columns: 4fr 3fr;
     align-items: center;
     gap: 50px;
 }
 
 .hero-content {
     text-align: left;
-    max-width: 600px;
+    max-width: 700px;
 }
 
 .hero-title {
@@ -142,53 +179,6 @@ include('includes/header.php');
     height: auto;
 }
 
-.decoration-circle {
-    position: absolute;
-    border-radius: 50%;
-    border: 2px solid rgba(234, 170, 52, 0.2);
-}
-
-.circle-1 {
-    width: 200px;
-    height: 200px;
-    top: 20%;
-    right: 10%;
-    animation: float 8s ease-in-out infinite;
-}
-
-.circle-2 {
-    width: 100px;
-    height: 100px;
-    bottom: 30%;
-    left: 10%;
-    animation: float 6s ease-in-out infinite;
-}
-
-.decoration-dot {
-    position: absolute;
-    width: 10px;
-    height: 10px;
-    border-radius: 50%;
-    background-color: #eaaa34;
-}
-
-.dot-1 {
-    top: 20%;
-    left: 20%;
-    animation: float 4s ease-in-out infinite;
-}
-
-.dot-2 {
-    top: 50%;
-    right: 15%;
-    animation: float 5s ease-in-out infinite;
-}
-
-.dot-3 {
-    bottom: 30%;
-    right: 30%;
-    animation: float 7s ease-in-out infinite;
-}
 
 @keyframes float {
     0% {
@@ -271,6 +261,38 @@ include('includes/header.php');
     background-color: #eaaa34;
     color: #fff;
 }
+
+.services .service-card:hover {
+    transform: translateY(-10px);
+}
+
+.services .section-title {
+    font-size: 2.5rem;
+    color: #042167;
+    text-align: center;
+    margin-bottom: 10px;
+}
+
+.services .section-subtitle {
+    font-size: 1.1rem;
+    color: #666;
+    text-align: center;
+    margin-bottom: 50px;
+}
+
+@media (max-width: 768px) {
+    .services {
+        padding: 60px 0;
+    }
+    
+    .services .section-title {
+        font-size: 2rem;
+    }
+    
+    .services .service-card {
+        padding: 30px 20px;
+    }
+}
 </style>
 
 <script>
@@ -344,9 +366,9 @@ document.addEventListener('DOMContentLoaded', function() {
 </script>
 
 <!-- Why Choose Us Section -->
-<section class="section why-us" style="background-color: #042167;">
+<section class="section why-us">
     <div class="container">
-        <h2 class="section-title" data-aos="fade-up">Why Choose CANEXT</h2>
+        <h2 class="section-title" data-aos="fade-up">Why Choose Visafy</h2>
         <p class="section-subtitle" data-aos="fade-up" data-aos-delay="100">Here's what sets us apart from other immigration consultancies</p>
         
         <div class="features-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 30px;">
@@ -445,7 +467,7 @@ document.addEventListener('DOMContentLoaded', function() {
             <div class="testimonial-card" style="background: #fff; padding: 30px; border-radius: 10px; box-shadow: 0 5px 15px rgba(0,0,0,0.05); position: relative; max-width: 350px; flex: 1;">
                 <div style="color: #042167; margin-bottom: 15px; font-weight: 500;">Express Entry Program</div>
                 <p class="story-content" style="font-size: 1.1em; line-height: 1.6; margin-bottom: 20px; position: relative;">
-                    "CANEXT made my Express Entry application process smooth and stress-free. Their guidance helped me secure permanent residency in just 6 months. Their attention to detail and expertise made all the difference!"
+                    "Visafy made my Express Entry application process smooth and stress-free. Their guidance helped me secure permanent residency in just 6 months. Their attention to detail and expertise made all the difference!"
                 </p>
                 <div style="display: flex; align-items: center; margin-top: 30px;">
                     <div>
@@ -460,7 +482,7 @@ document.addEventListener('DOMContentLoaded', function() {
             <div class="testimonial-card" style="background: #fff; padding: 30px; border-radius: 10px; box-shadow: 0 5px 15px rgba(0,0,0,0.05); position: relative; max-width: 350px; flex: 1;">
                 <div style="color: #042167; margin-bottom: 15px; font-weight: 500;">Study Permit</div>
                 <p class="story-content" style="font-size: 1.1em; line-height: 1.6; margin-bottom: 20px; position: relative;">
-                    "Thanks to CANEXT, I was accepted into my dream university in Canada. They helped me with my study permit application and gave me valuable advice on preparing for my new life as an international student."
+                    "Thanks to Visafy, I was accepted into my dream university in Canada. They helped me with my study permit application and gave me valuable advice on preparing for my new life as an international student."
                 </p>
                 <div style="display: flex; align-items: center; margin-top: 30px;">
                     <div>
@@ -475,7 +497,7 @@ document.addEventListener('DOMContentLoaded', function() {
             <div class="testimonial-card" style="background: #fff; padding: 30px; border-radius: 10px; box-shadow: 0 5px 15px rgba(0,0,0,0.05); position: relative; max-width: 350px; flex: 1;">
                 <div style="color: #042167; margin-bottom: 15px; font-weight: 500;">Work Permit</div>
                 <p class="story-content" style="font-size: 1.1em; line-height: 1.6; margin-bottom: 20px; position: relative;">
-                    "After struggling to secure a Canadian work permit on my own, I turned to CANEXT. Their expertise and strategic approach helped me obtain a work permit within weeks. I'm now working for a top company in Toronto!"
+                    "After struggling to secure a Canadian work permit on my own, I turned to Visafy. Their expertise and strategic approach helped me obtain a work permit within weeks. I'm now working for a top company in Toronto!"
                 </p>
                 <div style="display: flex; align-items: center; margin-top: 30px;">
                     <div>
@@ -542,7 +564,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     </div>
                     <div class="contact-details">
                         <h4>Email</h4>
-                        <p>info@canext.com</p>
+                        <p>info@Visafy.io</p>
                     </div>
                 </div>
                 

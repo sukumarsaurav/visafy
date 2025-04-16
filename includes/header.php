@@ -1,6 +1,6 @@
 <?php
 // Set default page title if not set
-$page_title = isset($page_title) ? $page_title : "CANEXT | Canadian Immigration Consultancy";
+$page_title = isset($page_title) ? $page_title : "Visayfy | Canadian Immigration Consultancy";
 
 // Check if base_url is already set from the including file
 if (!isset($base_url)) {
@@ -29,7 +29,7 @@ $base = isset($base_path) ? $base_path : $base_url;
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title><?php echo isset($page_title) ? $page_title : 'CANEXT Immigration Consultancy'; ?></title>
+    <title><?php echo isset($page_title) ? $page_title : 'Visafy Immigration Consultancy'; ?></title>
     <meta name="description" content="Expert Canadian immigration consultancy services for study permits, work permits, express entry, and more.">
     
     <!-- Favicon -->
@@ -75,7 +75,7 @@ $base = isset($base_path) ? $base_path : $base_url;
         <div class="container">
             <div class="top-navbar-content">
                 <div class="contact-info-top-bar">
-                    <a href="mailto:info@canext.com" class="top-bar-link"><i class="fas fa-envelope"></i> info@canext.com</a>
+                    <a href="mailto:info@visafy.io" class="top-bar-link"><i class="fas fa-envelope"></i> info@visafy.io</a>
                     <a href="tel:+16472267436" class="top-bar-link"><i class="fas fa-phone"></i> +1 (647) 226-7436</a>
                 </div>
                 <div class="member-login-top-bar">
@@ -175,6 +175,7 @@ $base = isset($base_path) ? $base_path : $base_url;
                     <ul class="nav-menu">
                     <li class="nav-item"><a href="<?php echo $base; ?>/about-us.php">About Us</a></li>
                     <li class="nav-item"><a href="<?php echo $base; ?>/services.php">Services</a></li>
+                    <li class="nav-item"><a href="<?php echo $base; ?>/become-member.php">Become Member</a></li>
                     <li class="nav-item"><a href="<?php echo $base; ?>/resources/immigration-news.php">News</a></li>
                     <li class="nav-item"><a href="<?php echo $base; ?>/resources/blog.php">Blog</a></li>
                        
