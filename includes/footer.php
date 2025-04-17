@@ -96,9 +96,9 @@
     <script src="https://unpkg.com/aos@next/dist/aos.js"></script>
     
     <!-- Custom JavaScript -->
-    <script src="<?php echo $base_url; ?>/js/main.js"></script>
-    <script src="<?php echo $base_url; ?>/js/header.js"></script>
-    <script src="<?php echo $base_url; ?>/js/resources.js"></script>
+    <script src="<?php echo $base_url; ?>/assets/js/main.js"></script>
+    <script src="<?php echo $base_url; ?>/assets/js/header.js"></script>
+    <script src="<?php echo $base_url; ?>/assets/js/resources.js"></script>
     
     <!-- Assessment Tool Drawer Script -->
     <script>
@@ -136,6 +136,6 @@
     </script>
 
     <!-- If you have footer-specific JS files -->
-    <script src="<?php echo isset($base_path) ? $base_path : ''; ?>js/footer.js"></script>
+    <script src="<?php echo isset($base_path) ? $base_path : ''; ?>/assets/js/footer.js"></script>
 </body>
 </html> 

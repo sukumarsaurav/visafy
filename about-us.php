@@ -43,7 +43,7 @@ include('includes/header.php');
                 </div>
             </div>
             <div class="about-image" data-aos="fade-left">
-                <img src="images/about-main.jpg" alt="Visafy Immigration Team" style="width: 100%; border-radius: 10px; box-shadow: 0 5px 15px rgba(0,0,0,0.1);">
+                <img src="assets/images/about-main.jpg" alt="Visafy Immigration Team" style="width: 100%; border-radius: 10px; box-shadow: 0 5px 15px rgba(0,0,0,0.1);">
             </div>
         </div>
     </div>

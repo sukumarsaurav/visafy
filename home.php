@@ -20,7 +20,7 @@ include('includes/header.php');
             </div>
             <div class="hero-image-container">
                 <div class="floating-image">
-                    <img src="images/9.png" alt="Immigration Services">
+                    <img src="assets/images/9.png" alt="Immigration Services">
                 </div>
                
 
@@ -35,35 +35,45 @@ include('includes/header.php');
         <h2 class="section-title" data-aos="fade-up">Our Services</h2>
         <p class="section-subtitle" data-aos="fade-up" data-aos-delay="100">Choose the assistance level that best suits your needs</p>
         
-        <div class="services-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 30px; margin-top: 50px;">
-            <!-- DIY Card -->
+        <div class="services-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 30px; margin-top: 50px;">
+            <!-- Explore Card -->
             <div class="service-card" data-aos="fade-up" data-aos-delay="200" style="background: #fff; padding: 40px 30px; border-radius: 10px; box-shadow: 0 5px 15px rgba(0,0,0,0.05); text-align: center; transition: transform 0.3s ease;">
                 <div class="service-icon" style="font-size: 3rem; color: #eaaa34; margin-bottom: 20px;">
-                    <i class="fas fa-tasks"></i>
+                    <i class="fas fa-compass"></i>
                 </div>
-                <h3 style="color: #042167; margin-bottom: 15px; font-size: 1.5rem;">Eligibility Check </h3>
-                <p style="color: #666; margin-bottom: 25px; line-height: 1.6;">Use our self-assessment tools to check your eligibility for various Canadian immigration programs at your own pace.</p>
-                <a href="assessment-tools.php" class="btn btn-primary" style="display: inline-block; padding: 10px 25px; border-radius: 5px; transition: all 0.3s ease;">Start Assessment</a>
+                <h3 style="color: #042167; margin-bottom: 15px; font-size: 1.5rem;">EXPLORE</h3>
+                <p style="color: #666; margin-bottom: 25px; line-height: 1.6;">Not sure where to start? Begin here to check your eligibility and discover the best immigration pathways available to you.</p>
+                <a href="assessment-tools.php" class="btn btn-primary" style="display: inline-block; padding: 10px 25px; border-radius: 5px; transition: all 0.3s ease;">Check Eligibility</a>
             </div>
             
-            <!-- Self-Assistance Card -->
+            <!-- Consult Card -->
             <div class="service-card" data-aos="fade-up" data-aos-delay="300" style="background: #fff; padding: 40px 30px; border-radius: 10px; box-shadow: 0 5px 15px rgba(0,0,0,0.05); text-align: center; transition: transform 0.3s ease;">
                 <div class="service-icon" style="font-size: 3rem; color: #eaaa34; margin-bottom: 20px;">
-                    <i class="fas fa-user-check"></i>
+                    <i class="fas fa-comments"></i>
                 </div>
-                <h3 style="color: #042167; margin-bottom: 15px; font-size: 1.5rem;">Self-Assistance (DIY)</h3>
-                <p style="color: #666; margin-bottom: 25px; line-height: 1.6;">Get guidance and resources to manage your immigration process with occasional expert support when needed.</p>
-                <a href="self-assistance.php" class="btn btn-primary" style="display: inline-block; padding: 10px 25px; border-radius: 5px; transition: all 0.3s ease;">Learn More</a>
+                <h3 style="color: #042167; margin-bottom: 15px; font-size: 1.5rem;">CONSULT</h3>
+                <p style="color: #666; margin-bottom: 25px; line-height: 1.6;">Need expert advice or stuck somewhere? Book a consultation with our Immigration & Settlement Professionals for tailored solutions.</p>
+                <a href="consultation.php" class="btn btn-primary" style="display: inline-block; padding: 10px 25px; border-radius: 5px; transition: all 0.3s ease;">Book Consultation</a>
             </div>
             
-            <!-- Complete Assistance Card -->
+            <!-- DIY Card -->
             <div class="service-card" data-aos="fade-up" data-aos-delay="400" style="background: #fff; padding: 40px 30px; border-radius: 10px; box-shadow: 0 5px 15px rgba(0,0,0,0.05); text-align: center; transition: transform 0.3s ease;">
                 <div class="service-icon" style="font-size: 3rem; color: #eaaa34; margin-bottom: 20px;">
-                    <i class="fas fa-star"></i>
+                    <i class="fas fa-tools"></i>
                 </div>
-                <h3 style="color: #042167; margin-bottom: 15px; font-size: 1.5rem;">Complete Assistance</h3>
-                <p style="color: #666; margin-bottom: 25px; line-height: 1.6;">Full end-to-end support with dedicated immigration consultants managing your entire application process.</p>
-                <a href="complete-assistance.php" class="btn btn-primary" style="display: inline-block; padding: 10px 25px; border-radius: 5px; transition: all 0.3s ease;">Get Started</a>
+                <h3 style="color: #042167; margin-bottom: 15px; font-size: 1.5rem;">DIY</h3>
+                <p style="color: #666; margin-bottom: 25px; line-height: 1.6;">Confident in managing your own application? Our DIY services will guide you in the right direction throughout your visa/immigration journey.</p>
+                <a href="diy-services.php" class="btn btn-primary" style="display: inline-block; padding: 10px 25px; border-radius: 5px; transition: all 0.3s ease;">Start DIY</a>
+            </div>
+
+            <!-- Processing Card -->
+            <div class="service-card" data-aos="fade-up" data-aos-delay="500" style="background: #fff; padding: 40px 30px; border-radius: 10px; box-shadow: 0 5px 15px rgba(0,0,0,0.05); text-align: center; transition: transform 0.3s ease;">
+                <div class="service-icon" style="font-size: 3rem; color: #eaaa34; margin-bottom: 20px;">
+                    <i class="fas fa-clipboard-check"></i>
+                </div>
+                <h3 style="color: #042167; margin-bottom: 15px; font-size: 1.5rem;">PROCESSING</h3>
+                <p style="color: #666; margin-bottom: 25px; line-height: 1.6;">Need complete assistance from start to finish? Choose from our packages offered by vetted & licensed Immigration Professionals.</p>
+                <a href="complete-assistance.php" class="btn btn-primary" style="display: inline-block; padding: 10px 25px; border-radius: 5px; transition: all 0.3s ease;">View Packages</a>
             </div>
         </div>
     </div>
@@ -72,7 +82,7 @@ include('includes/header.php');
 <style>
 .hero {
     padding: 80px 0;
-    background-color: #042167;
+    background-color:rgb(255, 255, 255);
     color: var(--color-light);
     overflow: hidden;
     position: relative;
@@ -92,6 +102,7 @@ include('includes/header.php');
 
 .hero-title {
     font-size: 3.5rem;
+    color: #042167;
     font-weight: 700;
     margin-bottom: 20px;
     line-height: 1.2;
@@ -157,6 +168,7 @@ include('includes/header.php');
     margin-bottom: 30px;
     line-height: 1.6;
     opacity: 0.9;
+    color: #042167;
 }
 
 .hero-buttons {
@@ -481,7 +493,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
 
 <!-- Call to Action Section -->
-<section class="section cta" style="background-image: linear-gradient(rgba(4, 33, 103, 0.95), rgba(4, 33, 103, 0.95)), url('images/cta.png'); background-size: cover; background-position: center; padding: 100px 0; color: var(--color-light); text-align: center;">
+<section class="section cta" style="background-image: linear-gradient(rgba(4, 33, 103, 0.95), rgba(4, 33, 103, 0.95)), url('assets/images/cta.png'); background-size: cover; background-position: center; padding: 100px 0; color: var(--color-light); text-align: center;">
     <div class="container">
         <h2 data-aos="fade-up" style="font-size: 2.5rem; margin-bottom: 20px;">Start Your Canadian Journey Today</h2>
         <p data-aos="fade-up" data-aos-delay="100" style="font-size: 1.2rem; margin-bottom: 30px; max-width: 700px; margin-left: auto; margin-right: auto;">Let our experts help you navigate the complex immigration process and achieve your Canadian dreams with confidence.</p>

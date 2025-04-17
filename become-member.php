@@ -13,7 +13,7 @@ include('includes/header.php');
                 <a href="#application-form" class="btn btn-primary" style="background-color: #eaaa34; border: none; padding: 12px 30px; border-radius: 5px; text-decoration: none; color: white;">Apply to Join</a>
             </div>
             <div class="hero-image" style="max-width: 500px;">
-                <img src="images/consultant-hero.png" alt="Immigration Consultant Network" style="width: 100%; height: auto;">
+                <img src="assets/images/consultant-hero.png" alt="Immigration Consultant Network" style="width: 100%; height: auto;">
             </div>
         </div>
     </div>

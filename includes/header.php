@@ -50,24 +50,24 @@ $base = isset($base_path) ? $base_path : $base_url;
     <script src="https://cdnjs.cloudflare.com/ajax/libs/aos/2.3.4/aos.js"></script>
     
     <!-- Custom CSS -->
-    <link rel="stylesheet" href="<?php echo $base; ?>/css/styles.css">
-    <link rel="stylesheet" href="<?php echo $base; ?>/css/animations.css">
-    <link rel="stylesheet" href="<?php echo $base; ?>/css/header.css">
-    <link rel="stylesheet" href="<?php echo $base; ?>/css/resources.css">
-    <link rel="stylesheet" href="<?php echo $base; ?>/css/assessment-drawer.css">
-    <link rel="stylesheet" href="<?php echo $base; ?>/css/news.css">
-    <link rel="stylesheet" href="<?php echo $base; ?>/css/faq.css">
+    <link rel="stylesheet" href="<?php echo $base; ?>/assets/css/styles.css">
+    <link rel="stylesheet" href="<?php echo $base; ?>/assets/css/animations.css">
+    <link rel="stylesheet" href="<?php echo $base; ?>/assets/css/header.css">
+    <link rel="stylesheet" href="<?php echo $base; ?>/assets/css/resources.css">
+    <link rel="stylesheet" href="<?php echo $base; ?>/assets/css/assessment-drawer.css">
+    <link rel="stylesheet" href="<?php echo $base; ?>/assets/css/news.css">
+    <link rel="stylesheet" href="<?php echo $base; ?>/assets/css/faq.css">
         
     <!-- Libraries -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/aos/2.3.4/aos.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/aos/2.3.4/aos.js"></script>
 
     <!-- Load utils.js before other scripts -->
-    <script src="<?php echo $base; ?>/js/utils.js"></script>
+    <script src="<?php echo $base; ?>/assets/js/utils.js"></script>
 
     <!-- Your custom scripts should come after utils.js -->
-    <script src="<?php echo $base; ?>/js/main.js" defer></script>
-    <script src="<?php echo $base; ?>/js/resources.js" defer></script>
+    <script src="<?php echo $base; ?>/assets/js/main.js" defer></script>
+    <script src="<?php echo $base; ?>/assets/js/resources.js" defer></script>
 </head>
 <body>
     <!-- Top Navbar -->
@@ -79,7 +79,7 @@ $base = isset($base_path) ? $base_path : $base_url;
                     <a href="tel:+16472267436" class="top-bar-link"><i class="fas fa-phone"></i> +1 (647) 226-7436</a>
                 </div>
                 <div class="member-login-top-bar">
-                    <a href="/member-login.php" class="login-btn-top"><i class="fas fa-user"></i> Member Login</a>
+                    <a href="/login.php" class="login-btn-top"><i class="fas fa-user"></i>Login</a>
                 </div>
             </div>
         </div>
@@ -92,7 +92,7 @@ $base = isset($base_path) ? $base_path : $base_url;
     <div class="side-drawer">
         <div class="drawer-header">
             <a href="<?php echo $base; ?>/index.php" class="drawer-logo">
-                <img src="<?php echo $base; ?>/images/logo-Visafy-light.png" alt="Visafy Logo" class="mobile-logo">
+                <img src="<?php echo $base; ?>/assets/images/logo-Visafy-light.png" alt="Visafy Logo" class="mobile-logo">
             </a>
             <button class="drawer-close"><i class="fas fa-times"></i></button>
         </div>
@@ -165,7 +165,7 @@ $base = isset($base_path) ? $base_path : $base_url;
             <!-- Logo -->
             <div class="logo">
                 <a href="/index.php">
-                    <img src="/images/logo-Visafy-light.png" alt="Visafy Logo" class="desktop-logo">
+                    <img src="/assets/images/logo-Visafy-light.png" alt="Visafy Logo" class="desktop-logo">
                 </a>
             </div>
             

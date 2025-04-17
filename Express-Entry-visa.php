@@ -305,7 +305,7 @@ include('includes/header.php');
             <!-- Success Story 1 -->
             <div class="story-card" style="background-color: var(--color-cream); padding: 30px; border-radius: 10px; box-shadow: 0 5px 15px rgba(0,0,0,0.05);">
                 <div class="story-header" style="display: flex; align-items: center; margin-bottom: 20px;">
-                    <img src="images/testimonials/person1.jpg" alt="Rajiv Patel" class="story-avatar" style="width: 70px; height: 70px; border-radius: 50%; object-fit: cover; margin-right: 15px;">
+                    <img src="assets/images/testimonials/person1.jpg" alt="Rajiv Patel" class="story-avatar" style="width: 70px; height: 70px; border-radius: 50%; object-fit: cover; margin-right: 15px;">
                     <div>
                         <h4 class="story-client" style="color: var(--color-burgundy); margin-bottom: 5px;">Rajiv Patel</h4>
                         <p class="story-visa-type" style="font-size: 0.9rem; color: #666;">Federal Skilled Worker</p>
@@ -320,7 +320,7 @@ include('includes/header.php');
             <!-- Success Story 2 -->
             <div class="story-card" style="background-color: var(--color-cream); padding: 30px; border-radius: 10px; box-shadow: 0 5px 15px rgba(0,0,0,0.05);">
                 <div class="story-header" style="display: flex; align-items: center; margin-bottom: 20px;">
-                    <img src="images/testimonials/person2.jpg" alt="Maria Rodriguez" class="story-avatar" style="width: 70px; height: 70px; border-radius: 50%; object-fit: cover; margin-right: 15px;">
+                    <img src="assets/images/testimonials/person2.jpg" alt="Maria Rodriguez" class="story-avatar" style="width: 70px; height: 70px; border-radius: 50%; object-fit: cover; margin-right: 15px;">
                     <div>
                         <h4 class="story-client" style="color: var(--color-burgundy); margin-bottom: 5px;">Maria Rodriguez</h4>
                         <p class="story-visa-type" style="font-size: 0.9rem; color: #666;">Canadian Experience Class</p>
@@ -335,7 +335,7 @@ include('includes/header.php');
             <!-- Success Story 3 -->
             <div class="story-card" style="background-color: var(--color-cream); padding: 30px; border-radius: 10px; box-shadow: 0 5px 15px rgba(0,0,0,0.05);">
                 <div class="story-header" style="display: flex; align-items: center; margin-bottom: 20px;">
-                    <img src="images/testimonials/person3.jpg" alt="Ahmed Hassan" class="story-avatar" style="width: 70px; height: 70px; border-radius: 50%; object-fit: cover; margin-right: 15px;">
+                    <img src="assets/images/testimonials/person3.jpg" alt="Ahmed Hassan" class="story-avatar" style="width: 70px; height: 70px; border-radius: 50%; object-fit: cover; margin-right: 15px;">
                     <div>
                         <h4 class="story-client" style="color: var(--color-burgundy); margin-bottom: 5px;">Ahmed Hassan</h4>
                         <p class="story-visa-type" style="font-size: 0.9rem; color: #666;">Federal Skilled Trades</p>
