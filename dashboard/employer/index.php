@@ -321,7 +321,7 @@ $user = getUserById($_SESSION['user_id']);
                     <i class="fas fa-tachometer-alt"></i>
                     <span>Dashboard</span>
                 </div>
-                <div class="menu-item">
+                <!-- <div class="menu-item">
                     <i class="fas fa-briefcase"></i>
                     <span>Job Postings</span>
                 </div>
@@ -344,7 +344,7 @@ $user = getUserById($_SESSION['user_id']);
                 <div class="menu-item">
                     <i class="fas fa-cog"></i>
                     <span>Settings</span>
-                </div>
+                </div> -->
                 <a href="../../logout.php" class="menu-item logout-btn">
                     <i class="fas fa-sign-out-alt"></i>
                     <span>Logout</span>

@@ -53,18 +53,8 @@ $user_type = $_SESSION['user_type'] ?? '';
                         Availability
                     </a>
                 </li>
-                <li class="nav-item">
-                    <a class="nav-link <?php echo $current_page === 'documents.php' ? 'active' : ''; ?>" href="documents.php">
-                        <i class="bi bi-file-earmark"></i>
-                        Documents
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link <?php echo $current_page === 'messages.php' ? 'active' : ''; ?>" href="messages.php">
-                        <i class="bi bi-chat-dots"></i>
-                        Messages
-                    </a>
-                </li>
+              
+               
             <?php elseif ($user_type === 'applicant'): ?>
                 <li class="nav-item">
                     <a class="nav-link <?php echo $current_page === 'index.php' ? 'active' : ''; ?>" href="index.php">
@@ -72,36 +62,9 @@ $user_type = $_SESSION['user_type'] ?? '';
                         Dashboard
                     </a>
                 </li>
-                <li class="nav-item">
-                    <a class="nav-link <?php echo $current_page === 'applications.php' ? 'active' : ''; ?>" href="applications.php">
-                        <i class="bi bi-file-earmark-text"></i>
-                        My Applications
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link <?php echo $current_page === 'eligibility.php' ? 'active' : ''; ?>" href="eligibility.php">
-                        <i class="bi bi-clipboard-check"></i>
-                        Eligibility Check
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link <?php echo $current_page === 'appointments.php' ? 'active' : ''; ?>" href="appointments.php">
-                        <i class="bi bi-calendar"></i>
-                        Appointments
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link <?php echo $current_page === 'documents.php' ? 'active' : ''; ?>" href="documents.php">
-                        <i class="bi bi-file-earmark"></i>
-                        Documents
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link <?php echo $current_page === 'messages.php' ? 'active' : ''; ?>" href="messages.php">
-                        <i class="bi bi-chat-dots"></i>
-                        Messages
-                    </a>
-                </li>
+                
+               
+             
             <?php elseif ($user_type === 'employer'): ?>
                 <li class="nav-item">
                     <a class="nav-link <?php echo $current_page === 'index.php' ? 'active' : ''; ?>" href="index.php">
@@ -109,30 +72,10 @@ $user_type = $_SESSION['user_type'] ?? '';
                         Dashboard
                     </a>
                 </li>
-                <li class="nav-item">
-                    <a class="nav-link <?php echo $current_page === 'profile.php' ? 'active' : ''; ?>" href="profile.php">
-                        <i class="bi bi-building"></i>
-                        Company Profile
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link <?php echo $current_page === 'jobs.php' ? 'active' : ''; ?>" href="jobs.php">
-                        <i class="bi bi-briefcase"></i>
-                        Job Postings
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link <?php echo $current_page === 'applications.php' ? 'active' : ''; ?>" href="applications.php">
-                        <i class="bi bi-people"></i>
-                        Applicants
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link <?php echo $current_page === 'lmia.php' ? 'active' : ''; ?>" href="lmia.php">
-                        <i class="bi bi-file-earmark-check"></i>
-                        LMIA Applications
-                    </a>
-                </li>
+               
+               
+               
+               
             <?php endif; ?>
         </ul>
         
