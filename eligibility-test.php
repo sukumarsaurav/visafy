@@ -1,18 +1,13 @@
 <?php
-$page_title = "Assessment Tools | CANEXT Immigration";
+$page_title = "Eligibility Checker | Visafy Immigration Consultancy";
 include('includes/header.php');
 ?>
-<?php
-// Define page title and include header
-$pageTitle = "Immigration Eligibility Checker";
-include_once("includes/header.php");
-?>
 
-<div class="container mt-5">
+<div class="container mt-5 mb-5">
     <div class="row justify-content-center">
         <div class="col-md-8">
             <div class="card">
-                <div class="card-header bg-primary text-white">
+                <div class="card-header" style="background-color: var(--color-primary); color: var(--color-light);">
                     <h3 class="mb-0">Immigration Eligibility Checker</h3>
                 </div>
                 <div class="card-body">
@@ -57,12 +52,12 @@ include_once("includes/header.php");
 </div>
 
 <!-- SDS Country List Modal -->
-<div class="modal fade" id="sdsCountriesModal" tabindex="-1" role="dialog" aria-labelledby="sdsCountriesModalLabel" aria-hidden="true">
+<div class="modal fade" id="sdsCountriesModal" tabindex="-1" role="dialog" aria-labelledby="sdsCountriesModalLabel" aria-hidden="true" style="display: none;">
     <div class="modal-dialog" role="document">
         <div class="modal-content">
-            <div class="modal-header">
+            <div class="modal-header" style="background-color: var(--color-primary); color: var(--color-light);">
                 <h5 class="modal-title" id="sdsCountriesModalLabel">SDS Eligible Countries</h5>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close" style="color: var(--color-light);">
                     <span aria-hidden="true">&times;</span>
                 </button>
             </div>
@@ -103,18 +98,18 @@ include_once("includes/header.php");
         border: 1px solid #ddd;
         border-radius: 5px;
         cursor: pointer;
-        transition: all 0.3s;
+        transition: all 0.3s ease;
     }
     .answer-option:hover {
         background-color: #f8f9fa;
     }
     .answer-option.selected {
-        background-color: #d4edda;
-        border-color: #c3e6cb;
+        background-color: var(--color-gold);
+        border-color: var(--color-secondary);
     }
     .alert-eligible {
         background-color: #d4edda;
-        border-color: #c3e6cb;
+        border-color: var(--color-secondary);
         color: #155724;
     }
     .alert-not-eligible {
@@ -130,11 +125,61 @@ include_once("includes/header.php");
     .consultant-link {
         margin-top: 10px;
     }
+    .btn-primary {
+        background-color: var(--color-secondary);
+        border-color: var(--color-secondary);
+    }
+    .btn-primary:hover {
+        background-color: var(--color-primary);
+        border-color: var(--color-primary);
+    }
+    /* Fix for modal issues */
+    .modal {
+        background-color: rgba(0, 0, 0, 0);
+    }
+    .modal-backdrop {
+        opacity: 0.5 !important;
+    }
+    /* Prevent modal from being visible on page load */
+    .modal.fade {
+        display: none;
+    }
+    /* Fix for Bootstrap 4.6 modal close button */
+    .close {
+        opacity: 0.8;
+    }
+    .close:hover {
+        opacity: 1;
+    }
+    /* Make buttons match website theme */
+    #prev-button, 
+    .modal-footer .btn-secondary {
+        background-color: var(--color-gray);
+        border-color: var(--color-gray);
+        color: white;
+    }
+    #prev-button:hover, 
+    .modal-footer .btn-secondary:hover {
+        background-color: var(--color-dark);
+        border-color: var(--color-dark);
+    }
 </style>
 
-<!-- Include jQuery and Bootstrap JS -->
+<!-- Ensure jQuery and Bootstrap are loaded before eligibility.js -->
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/js/bootstrap.min.js"></script>
+
+<!-- Add initialization script to ensure modal is hidden -->
+<script>
+    $(document).ready(function() {
+        // Force hide any modal that might be visible
+        $('.modal').modal('hide');
+        // Remove any lingering backdrop
+        $('.modal-backdrop').remove();
+        $('body').removeClass('modal-open').css('padding-right', '');
+    });
+</script>
 
 <!-- Include custom eligibility JavaScript -->
 <script src="assets/js/eligibility.js"></script>

@@ -26,9 +26,15 @@ document.addEventListener('DOMContentLoaded', function() {
     const resultMessage = document.getElementById('result-message');
     const resultLinks = document.getElementById('result-links');
     const restartButton = document.getElementById('restart-button');
+    const sdsCountriesModal = document.getElementById('sdsCountriesModal');
 
-    // Consultant link template
-    const consultantLinkHTML = '<a href="contact-consultant.php" class="btn btn-primary consultant-link">Contact a Consultant</a>';
+    // Ensure the modal is hidden on page load
+    if (sdsCountriesModal) {
+        $(sdsCountriesModal).modal('hide');
+    }
+
+    // Consultant link template - updated to match the website's structure
+    const consultantLinkHTML = '<a href="consultant.php" class="btn btn-primary consultant-link">Book a Consultation</a>';
 
     // Define the SDS eligible countries
     const sdsCountries = [
@@ -578,9 +584,37 @@ document.addEventListener('DOMContentLoaded', function() {
     document.addEventListener('click', function(e) {
         if (e.target && e.target.id === 'show-sds-countries') {
             e.preventDefault();
-            $('#sdsCountriesModal').modal('show');
+            // Close any existing modals first
+            $('.modal').modal('hide');
+            $('.modal-backdrop').remove();
+            $('body').removeClass('modal-open').css('padding-right', '');
+            
+            // Show the SDS countries modal
+            $('#sdsCountriesModal').modal({
+                backdrop: 'static',
+                keyboard: false,
+                show: true
+            });
         }
     });
+    
+    // Close modal when the Close button is clicked
+    const modalCloseBtn = document.querySelector('#sdsCountriesModal .close');
+    if (modalCloseBtn) {
+        modalCloseBtn.addEventListener('click', function() {
+            $('#sdsCountriesModal').modal('hide');
+            $('.modal-backdrop').remove();
+        });
+    }
+    
+    // Close modal when the Close button in footer is clicked
+    const modalFooterCloseBtn = document.querySelector('#sdsCountriesModal .modal-footer .btn');
+    if (modalFooterCloseBtn) {
+        modalFooterCloseBtn.addEventListener('click', function() {
+            $('#sdsCountriesModal').modal('hide');
+            $('.modal-backdrop').remove();
+        });
+    }
 
     // Handler for category selection
     function handleCategoryChange() {
@@ -724,5 +758,13 @@ document.addEventListener('DOMContentLoaded', function() {
         primaryCategorySelect.value = '';
         questionContainer.style.display = 'none';
         resultContainer.style.display = 'none';
+        
+        // Ensure modal is hidden
+        $('#sdsCountriesModal').modal('hide');
+        $('.modal-backdrop').remove();
     }
+    
+    // Initialize - make sure modal is hidden
+    $('#sdsCountriesModal').modal('hide');
+    $('.modal-backdrop').remove();
 });
