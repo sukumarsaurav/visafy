@@ -45,6 +45,38 @@ if (isset($_POST['register'])) {
                 $success = ($user_type === 'professional') 
                     ? "Registration successful! Your account is pending admin approval."
                     : "Registration successful! You can now login.";
+                
+                // For professional users, create a professional profile
+                if ($user_type === 'professional') {
+                    $new_user_id = $conn->insert_id;
+                    
+                    // Create a default professional record
+                    $license_number = "PENDING-" . rand(10000, 99999);
+                    $years_experience = 0;
+                    $default_bio = "Professional profile pending completion.";
+                    $is_verified = 0; // Not verified by default
+                    
+                    $stmt = $conn->prepare("INSERT INTO professionals (
+                        user_id, license_number, years_experience, education, specializations, 
+                        bio, phone, languages, profile_completed, is_verified
+                    ) VALUES (?, ?, ?, '', '', ?, '', '', 0, ?)");
+                    
+                    $stmt->bind_param("isisi", $new_user_id, $license_number, $years_experience, $default_bio, $is_verified);
+                    $stmt->execute();
+                    
+                    // Create default consultation fees
+                    $default_fees = [
+                        ['video', 150.00],
+                        ['phone', 125.00],
+                        ['inperson', 175.00]
+                    ];
+                    
+                    foreach ($default_fees as $fee) {
+                        $fee_stmt = $conn->prepare("INSERT INTO consultation_fees (professional_id, consultation_type, fee) VALUES (?, ?, ?)");
+                        $fee_stmt->bind_param("isd", $new_user_id, $fee[0], $fee[1]);
+                        $fee_stmt->execute();
+                    }
+                }
             } else {
                 $error = "Registration failed. Please try again.";
             }

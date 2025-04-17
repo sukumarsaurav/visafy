@@ -121,4 +121,57 @@ CREATE TABLE `notifications` (
   PRIMARY KEY (`id`),
   KEY `user_id` (`user_id`),
   CONSTRAINT `notifications_user_fk` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- Create consultant_availability table
+CREATE TABLE `consultant_availability` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `professional_id` int(11) NOT NULL,
+  `date` date NOT NULL,
+  `is_video_available` tinyint(1) NOT NULL DEFAULT 1,
+  `is_phone_available` tinyint(1) NOT NULL DEFAULT 1,
+  `is_inperson_available` tinyint(1) NOT NULL DEFAULT 1,
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
+  `updated_at` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `professional_date` (`professional_id`, `date`),
+  CONSTRAINT `consultant_availability_professional_fk` FOREIGN KEY (`professional_id`) REFERENCES `users` (`id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- Create time_slots table
+CREATE TABLE `time_slots` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `professional_id` int(11) NOT NULL,
+  `date` date NOT NULL,
+  `start_time` time NOT NULL,
+  `end_time` time NOT NULL,
+  `is_video_available` tinyint(1) NOT NULL DEFAULT 1,
+  `is_phone_available` tinyint(1) NOT NULL DEFAULT 1,
+  `is_inperson_available` tinyint(1) NOT NULL DEFAULT 1,
+  `is_booked` tinyint(1) NOT NULL DEFAULT 0,
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
+  `updated_at` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `professional_time_slot` (`professional_id`, `date`, `start_time`),
+  CONSTRAINT `time_slots_professional_fk` FOREIGN KEY (`professional_id`) REFERENCES `users` (`id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- Create bookings table
+CREATE TABLE `bookings` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `professional_id` int(11) NOT NULL,
+  `client_id` int(11) NOT NULL,
+  `time_slot_id` int(11) NOT NULL,
+  `consultation_type` enum('video','phone','inperson') NOT NULL,
+  `status` enum('pending','confirmed','completed','cancelled') NOT NULL DEFAULT 'pending',
+  `price` decimal(10,2) NOT NULL,
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
+  `updated_at` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
+  PRIMARY KEY (`id`),
+  KEY `professional_id` (`professional_id`),
+  KEY `client_id` (`client_id`),
+  KEY `time_slot_id` (`time_slot_id`),
+  CONSTRAINT `bookings_professional_fk` FOREIGN KEY (`professional_id`) REFERENCES `users` (`id`) ON DELETE CASCADE,
+  CONSTRAINT `bookings_client_fk` FOREIGN KEY (`client_id`) REFERENCES `users` (`id`) ON DELETE CASCADE,
+  CONSTRAINT `bookings_time_slot_fk` FOREIGN KEY (`time_slot_id`) REFERENCES `time_slots` (`id`) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci; 

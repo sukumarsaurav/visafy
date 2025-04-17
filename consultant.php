@@ -1,231 +1,277 @@
 <?php
-$page_title = "Book a Consultation | CANEXT Immigration";
+session_start();
+require_once 'config/database.php';
+
+// Get search parameters
+$search = isset($_GET['search']) ? trim($_GET['search']) : '';
+$specialty = isset($_GET['specialty']) ? trim($_GET['specialty']) : '';
+$language = isset($_GET['language']) ? trim($_GET['language']) : '';
+$min_price = isset($_GET['min_price']) && is_numeric($_GET['min_price']) ? (float)$_GET['min_price'] : null;
+$max_price = isset($_GET['max_price']) && is_numeric($_GET['max_price']) ? (float)$_GET['max_price'] : null;
+
+// Base query to get professionals
+$query = "SELECT p.*, u.name, u.email 
+          FROM professionals p 
+          JOIN users u ON p.user_id = u.id 
+          WHERE u.user_type = 'professional' 
+          AND u.status = 'active' 
+          AND p.is_verified = 1";
+
+$params = [];
+$types = "";
+
+// Add search conditions
+if (!empty($search)) {
+    $query .= " AND (u.name LIKE ? OR p.specializations LIKE ? OR p.bio LIKE ?)";
+    $search_param = "%$search%";
+    array_push($params, $search_param, $search_param, $search_param);
+    $types .= "sss";
+}
+
+if (!empty($specialty)) {
+    $query .= " AND p.specializations LIKE ?";
+    array_push($params, "%$specialty%");
+    $types .= "s";
+}
+
+if (!empty($language)) {
+    $query .= " AND p.languages LIKE ?";
+    array_push($params, "%$language%");
+    $types .= "s";
+}
+
+// Add price filtering from consultation_fees
+if ($min_price !== null || $max_price !== null) {
+    $query .= " AND EXISTS (SELECT 1 FROM consultation_fees cf WHERE cf.professional_id = p.user_id";
+    
+    if ($min_price !== null) {
+        $query .= " AND cf.fee >= ?";
+        array_push($params, $min_price);
+        $types .= "d";
+    }
+    
+    if ($max_price !== null) {
+        $query .= " AND cf.fee <= ?";
+        array_push($params, $max_price);
+        $types .= "d";
+    }
+    
+    $query .= ")";
+}
+
+$query .= " ORDER BY p.is_featured DESC, p.rating DESC";
+
+// Execute the query with parameters if needed
+if (!empty($params)) {
+    $stmt = $conn->prepare($query);
+    $stmt->bind_param($types, ...$params);
+    $stmt->execute();
+    $result = $stmt->get_result();
+} else {
+    $result = $conn->query($query);
+}
+
+// Fetch all consultants
+$consultants = [];
+if ($result && $result->num_rows > 0) {
+    while ($row = $result->fetch_assoc()) {
+        $consultants[] = $row;
+    }
+}
+
+// Extract unique specialties and languages for filter options
+$specialties = [];
+$languages = [];
+
+foreach ($consultants as $consultant) {
+    $consultant_specialties = explode(',', $consultant['specializations']);
+    $consultant_languages = explode(',', $consultant['languages']);
+    
+    foreach ($consultant_specialties as $spec) {
+        $spec = trim($spec);
+        if (!empty($spec) && !in_array($spec, $specialties)) {
+            $specialties[] = $spec;
+        }
+    }
+    
+    foreach ($consultant_languages as $lang) {
+        $lang = trim($lang);
+        if (!empty($lang) && !in_array($lang, $languages)) {
+            $languages[] = $lang;
+        }
+    }
+}
+
+// Sort filter options alphabetically
+sort($specialties);
+sort($languages);
+
+// Get consultation fees for each professional
+$consultation_fees = [];
+$fee_query = "SELECT professional_id, consultation_type, fee FROM consultation_fees";
+$fee_result = $conn->query($fee_query);
+
+if ($fee_result && $fee_result->num_rows > 0) {
+    while ($row = $fee_result->fetch_assoc()) {
+        $consultation_fees[$row['professional_id']][$row['consultation_type']] = $row['fee'];
+    }
+}
+
+$page_title = "Find a Consultant | Visafy";
 include('includes/header.php');
 ?>
 
-<!-- Page Header -->
-<section class="page-header" style="background-image: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), url('images/consultation-header.jpg'); background-size: cover; background-position: center; padding: 100px 0; color: var(--color-light); text-align: center;background-color: var(--color-burgundy);">
-<div style="position: absolute; width: 300px; height: 300px; border-radius: 50%; background-color: rgba(255, 255, 255, 0.1); top: -100px; left: -100px;"></div>
-    <div style="position: absolute; width: 200px; height: 200px; border-radius: 50%; background-color: rgba(255, 255, 255, 0.1); bottom: -50px; right: 10%; animation: pulse 4s infinite alternate;"></div>
-    <div style="position: absolute; width: 100px; height: 100px; border-radius: 50%; background-color: rgba(255, 255, 255, 0.1); top: 30%; right: 20%; animation: pulse 3s infinite alternate;"></div>
+<section class="consultant-hero bg-light py-5">
     <div class="container">
-        <h1 data-aos="fade-up">Book a Consultation</h1>
-        <p data-aos="fade-up" data-aos-delay="100" style="max-width: 700px; margin: 20px auto 0;">Schedule a personalized consultation with one of our licensed immigration consultants</p>
-    </div>
-</section>
-
-<!-- Booking Steps -->
-<section class="section booking-section" style="padding: 60px 0;">
-    <div class="container">
-        <!-- Progress Steps -->
-        <div class="booking-progress" style="display: flex; justify-content: center; align-items: center; margin-bottom: 50px;">
-            <div class="progress-step active" style="display: flex; align-items: center;">
-                <div class="step-number" style="width: 40px; height: 40px; background-color: var(--color-burgundy); color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 600;">1</div>
-                <span class="step-text" style="margin-left: 10px; color: var(--color-burgundy); font-weight: 500;">Select Service</span>
-            </div>
-            <div style="width: 100px; height: 2px; background-color: #e0e0e0; margin: 0 15px;"></div>
-            <div class="progress-step" style="display: flex; align-items: center;">
-                <div class="step-number" style="width: 40px; height: 40px; background-color: #e0e0e0; color: #666; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 600;">2</div>
-                <span class="step-text" style="margin-left: 10px; color: #666;">Your Details</span>
-            </div>
-            <div style="width: 100px; height: 2px; background-color: #e0e0e0; margin: 0 15px;"></div>
-            <div class="progress-step" style="display: flex; align-items: center;">
-                <div class="step-number" style="width: 40px; height: 40px; background-color: #e0e0e0; color: #666; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 600;">3</div>
-                <span class="step-text" style="margin-left: 10px; color: #666;">Confirmation</span>
+        <h1 class="text-center mb-4">Find an Immigration Consultant</h1>
+        <p class="text-center lead mb-5">Connect with experienced and verified immigration consultants who can help you with your immigration journey.</p>
+        
+        <!-- Search and Filters Section -->
+        <div class="card mb-5 shadow-sm">
+            <div class="card-body">
+                <form action="" method="GET" class="row g-3">
+                    <div class="col-md-6">
+                        <label for="search" class="form-label">Search by name, specialty, or description</label>
+                        <input type="text" class="form-control" id="search" name="search" value="<?php echo htmlspecialchars($search); ?>" placeholder="E.g., Express Entry, Student Visa">
+                    </div>
+                    
+                    <div class="col-md-3">
+                        <label for="specialty" class="form-label">Specialty</label>
+                        <select class="form-select" id="specialty" name="specialty">
+                            <option value="">All Specialties</option>
+                            <?php foreach ($specialties as $spec): ?>
+                                <option value="<?php echo htmlspecialchars($spec); ?>" <?php echo $specialty === $spec ? 'selected' : ''; ?>>
+                                    <?php echo htmlspecialchars($spec); ?>
+                                </option>
+                            <?php endforeach; ?>
+                        </select>
+                    </div>
+                    
+                    <div class="col-md-3">
+                        <label for="language" class="form-label">Language</label>
+                        <select class="form-select" id="language" name="language">
+                            <option value="">All Languages</option>
+                            <?php foreach ($languages as $lang): ?>
+                                <option value="<?php echo htmlspecialchars($lang); ?>" <?php echo $language === $lang ? 'selected' : ''; ?>>
+                                    <?php echo htmlspecialchars($lang); ?>
+                                </option>
+                            <?php endforeach; ?>
+                        </select>
+                    </div>
+                    
+                    <div class="col-md-3">
+                        <label for="min_price" class="form-label">Min. Price (C$)</label>
+                        <input type="number" class="form-control" id="min_price" name="min_price" value="<?php echo htmlspecialchars($min_price ?? ''); ?>" placeholder="Min price">
+                    </div>
+                    
+                    <div class="col-md-3">
+                        <label for="max_price" class="form-label">Max. Price (C$)</label>
+                        <input type="number" class="form-control" id="max_price" name="max_price" value="<?php echo htmlspecialchars($max_price ?? ''); ?>" placeholder="Max price">
+                    </div>
+                    
+                    <div class="col-md-6 d-flex align-items-end">
+                        <button type="submit" class="btn btn-primary me-2">Apply Filters</button>
+                        <a href="consultant.php" class="btn btn-outline-secondary">Reset</a>
+                    </div>
+                </form>
             </div>
         </div>
         
-        <?php if(isset($_SESSION['booking_error'])): ?>
-            <div class="alert alert-danger" style="max-width: 800px; margin: 0 auto 30px; padding: 15px; background-color: #f8d7da; color: #721c24; border-radius: 5px; text-align: center;">
-                <?php echo $_SESSION['booking_error']; unset($_SESSION['booking_error']); ?>
-            </div>
-        <?php endif; ?>
-
-        <div class="booking-container" style="max-width: 800px; margin: 0 auto;">
-            <h2 class="section-title" style="text-align: center; margin-bottom: 40px;">Select Consultation Type</h2>
-            
-            <!-- Consultation Types -->
-            <div class="consultation-types" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 25px; margin-bottom: 40px;">
-                <!-- Video Consultation -->
-                <div class="consultation-type" data-type="Video Consultation" style="background: white; border-radius: 10px; padding: 25px; box-shadow: 0 5px 15px rgba(0,0,0,0.05); cursor: pointer; transition: transform 0.3s, box-shadow 0.3s;" data-aos="fade-up">
-                    <div style="display: flex; align-items: center; margin-bottom: 15px;">
-                        <div style="width: 50px; height: 50px; background-color: var(--color-cream); border-radius: 10px; display: flex; align-items: center; justify-content: center; margin-right: 15px;">
-                            <i class="fas fa-video" style="color: var(--color-burgundy); font-size: 24px;"></i>
+        <!-- Results Section -->
+        <div class="row">
+            <?php if (empty($consultants)): ?>
+                <div class="col-12 text-center py-5">
+                    <div class="alert alert-info">
+                        <h4 class="alert-heading">No consultants found</h4>
+                        <p>Sorry, we couldn't find any consultants matching your criteria. Try adjusting your filters or search terms.</p>
+                    </div>
+                </div>
+            <?php else: ?>
+                <?php foreach ($consultants as $consultant): ?>
+                    <div class="col-lg-4 col-md-6 mb-4">
+                        <div class="card h-100 shadow-sm <?php echo $consultant['is_featured'] ? 'border-primary' : ''; ?>">
+                            <?php if ($consultant['is_featured']): ?>
+                                <div class="position-absolute top-0 end-0 badge bg-primary m-2">Featured</div>
+                            <?php endif; ?>
+                            
+                            <div class="card-body">
+                                <div class="text-center mb-3">
+                                    <img src="<?php echo !empty($consultant['profile_image']) ? htmlspecialchars($consultant['profile_image']) : 'images/default-profile.jpg'; ?>" 
+                                         alt="<?php echo htmlspecialchars($consultant['name']); ?>" 
+                                         class="rounded-circle mb-2" 
+                                         style="width: 100px; height: 100px; object-fit: cover;">
+                                    <h5 class="card-title"><?php echo htmlspecialchars($consultant['name']); ?></h5>
+                                    <p class="text-muted small mb-2"><?php echo htmlspecialchars($consultant['license_number']); ?></p>
+                                    
+                                    <div class="mb-2">
+                                        <span class="badge bg-primary"><?php echo htmlspecialchars($consultant['years_experience']); ?> years exp</span>
+                                        <?php if ($consultant['rating']): ?>
+                                            <span class="badge bg-success">
+                                                <i class="fas fa-star small"></i> <?php echo number_format($consultant['rating'], 1); ?>
+                                                (<?php echo $consultant['reviews_count']; ?>)
+                                            </span>
+                                        <?php endif; ?>
+                                    </div>
+                                </div>
+                                
+                                <div class="mb-3">
+                                    <h6 class="card-subtitle mb-1">Specialties:</h6>
+                                    <p class="card-text small">
+                                        <?php 
+                                        $specs = explode(',', $consultant['specializations']); 
+                                        foreach ($specs as $index => $spec): 
+                                            echo htmlspecialchars(trim($spec));
+                                            if ($index < count($specs) - 1) echo ', ';
+                                        endforeach; 
+                                        ?>
+                                    </p>
+                                </div>
+                                
+                                <div class="mb-3">
+                                    <h6 class="card-subtitle mb-1">Languages:</h6>
+                                    <p class="card-text small">
+                                        <?php 
+                                        $langs = explode(',', $consultant['languages']); 
+                                        foreach ($langs as $index => $lang): 
+                                            echo htmlspecialchars(trim($lang));
+                                            if ($index < count($langs) - 1) echo ', ';
+                                        endforeach; 
+                                        ?>
+                                    </p>
+                                </div>
+                                
+                                <div class="mb-3">
+                                    <h6 class="card-subtitle mb-1">Consultation Fees:</h6>
+                                    <ul class="list-unstyled small">
+                                        <?php if (isset($consultation_fees[$consultant['user_id']])): ?>
+                                            <?php if (isset($consultation_fees[$consultant['user_id']]['video'])): ?>
+                                                <li>Video: C$<?php echo number_format($consultation_fees[$consultant['user_id']]['video'], 2); ?></li>
+                                            <?php endif; ?>
+                                            
+                                            <?php if (isset($consultation_fees[$consultant['user_id']]['phone'])): ?>
+                                                <li>Phone: C$<?php echo number_format($consultation_fees[$consultant['user_id']]['phone'], 2); ?></li>
+                                            <?php endif; ?>
+                                            
+                                            <?php if (isset($consultation_fees[$consultant['user_id']]['inperson'])): ?>
+                                                <li>In-person: C$<?php echo number_format($consultation_fees[$consultant['user_id']]['inperson'], 2); ?></li>
+                                            <?php endif; ?>
+                                        <?php else: ?>
+                                            <li>Contact for pricing</li>
+                                        <?php endif; ?>
+                                    </ul>
+                                </div>
+                            </div>
+                            
+                            <div class="card-footer bg-white border-top-0 text-center">
+                                <a href="consultant-profile.php?id=<?php echo $consultant['id']; ?>" class="btn btn-primary">View Profile</a>
+                            </div>
                         </div>
-                        <h3 style="margin: 0; font-size: 18px; color: var(--color-dark);">Video Consultation</h3>
                     </div>
-                    <p style="margin-bottom: 15px; color: #666; font-size: 14px;">Meet with our consultant via video call from anywhere in the world for personalized advice.</p>
-                    <div style="display: flex; justify-content: space-between; align-items: center;">
-                        <span style="font-weight: 600; color: var(--color-dark);">C$150</span>
-                        <span style="font-size: 14px; color: #666;">60 minutes</span>
-                    </div>
-                </div>
-                
-                <!-- Phone Consultation -->
-                <div class="consultation-type" data-type="Phone Consultation" style="background: white; border-radius: 10px; padding: 25px; box-shadow: 0 5px 15px rgba(0,0,0,0.05); cursor: pointer; transition: transform 0.3s, box-shadow 0.3s;" data-aos="fade-up" data-aos-delay="100">
-                    <div style="display: flex; align-items: center; margin-bottom: 15px;">
-                        <div style="width: 50px; height: 50px; background-color: var(--color-cream); border-radius: 10px; display: flex; align-items: center; justify-content: center; margin-right: 15px;">
-                            <i class="fas fa-phone-alt" style="color: var(--color-burgundy); font-size: 24px;"></i>
-                        </div>
-                        <h3 style="margin: 0; font-size: 18px; color: var(--color-dark);">Phone Consultation</h3>
-                    </div>
-                    <p style="margin-bottom: 15px; color: #666; font-size: 14px;">Speak directly with our immigration expert via phone call for convenient guidance.</p>
-                    <div style="display: flex; justify-content: space-between; align-items: center;">
-                        <span style="font-weight: 600; color: var(--color-dark);">C$120</span>
-                        <span style="font-size: 14px; color: #666;">45 minutes</span>
-                    </div>
-                </div>
-                
-                <!-- In-Person Consultation -->
-                <div class="consultation-type" data-type="In-Person Consultation" style="background: white; border-radius: 10px; padding: 25px; box-shadow: 0 5px 15px rgba(0,0,0,0.05); cursor: pointer; transition: transform 0.3s, box-shadow 0.3s;" data-aos="fade-up" data-aos-delay="200">
-                    <div style="display: flex; align-items: center; margin-bottom: 15px;">
-                        <div style="width: 50px; height: 50px; background-color: var(--color-cream); border-radius: 10px; display: flex; align-items: center; justify-content: center; margin-right: 15px;">
-                            <i class="fas fa-user" style="color: var(--color-burgundy); font-size: 24px;"></i>
-                        </div>
-                        <h3 style="margin: 0; font-size: 18px; color: var(--color-dark);">In-Person Consultation</h3>
-                    </div>
-                    <p style="margin-bottom: 15px; color: #666; font-size: 14px;">Visit our office in Toronto for a face-to-face meeting with our licensed consultant.</p>
-                    <div style="display: flex; justify-content: space-between; align-items: center;">
-                        <span style="font-weight: 600; color: var(--color-dark);">C$200</span>
-                        <span style="font-size: 14px; color: #666;">60 minutes</span>
-                    </div>
-                </div>
-            </div>
-            
-            <!-- Date and Time Selection -->
-            <div id="dateTimeSelection" style="display: none;">
-                <h3 style="margin-bottom: 20px; text-align: center; color: var(--color-dark);">Select Date and Time</h3>
-                
-                <!-- Date Selection -->
-                <div class="date-selection" style="margin-bottom: 30px;">
-                    <label style="display: block; margin-bottom: 10px; color: var(--color-dark); font-weight: 500;">Select Date:</label>
-                    <input type="date" id="consultationDate" style="width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 5px; font-family: inherit;" min="<?php echo date('Y-m-d'); ?>" max="<?php echo date('Y-m-d', strtotime('+60 days')); ?>">
-                </div>
-                
-                <!-- Time Slots -->
-                <div class="time-selection" style="margin-bottom: 30px;">
-                    <label style="display: block; margin-bottom: 10px; color: var(--color-dark); font-weight: 500;">Select Time:</label>
-                    <div class="time-slots" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(100px, 1fr)); gap: 15px;">
-                        <div class="time-slot" data-time="09:00:00" style="text-align: center; padding: 10px; border: 1px solid #ddd; border-radius: 5px; cursor: pointer; transition: all 0.3s;">9:00 AM</div>
-                        <div class="time-slot" data-time="10:00:00" style="text-align: center; padding: 10px; border: 1px solid #ddd; border-radius: 5px; cursor: pointer; transition: all 0.3s;">10:00 AM</div>
-                        <div class="time-slot" data-time="11:00:00" style="text-align: center; padding: 10px; border: 1px solid #ddd; border-radius: 5px; cursor: pointer; transition: all 0.3s;">11:00 AM</div>
-                        <div class="time-slot" data-time="12:00:00" style="text-align: center; padding: 10px; border: 1px solid #ddd; border-radius: 5px; cursor: pointer; transition: all 0.3s;">12:00 PM</div>
-                        <div class="time-slot" data-time="13:00:00" style="text-align: center; padding: 10px; border: 1px solid #ddd; border-radius: 5px; cursor: pointer; transition: all 0.3s;">1:00 PM</div>
-                        <div class="time-slot" data-time="14:00:00" style="text-align: center; padding: 10px; border: 1px solid #ddd; border-radius: 5px; cursor: pointer; transition: all 0.3s;">2:00 PM</div>
-                        <div class="time-slot" data-time="15:00:00" style="text-align: center; padding: 10px; border: 1px solid #ddd; border-radius: 5px; cursor: pointer; transition: all 0.3s;">3:00 PM</div>
-                        <div class="time-slot" data-time="16:00:00" style="text-align: center; padding: 10px; border: 1px solid #ddd; border-radius: 5px; cursor: pointer; transition: all 0.3s;">4:00 PM</div>
-                    </div>
-                </div>
-                
-                <!-- Error Message -->
-                <div id="errorMessage" style="display: none; color: #dc3545; text-align: center; margin: 20px auto 0; padding: 10px; border-radius: 5px; background-color: #ffe6e6;"></div>
-                
-                <!-- Continue Button -->
-                <div class="booking-navigation" style="text-align: center; margin-top: 30px;">
-                    <button id="continueBtn" class="btn btn-primary" style="min-width: 150px;" disabled>Continue</button>
-                </div>
-            </div>
+                <?php endforeach; ?>
+            <?php endif; ?>
         </div>
     </div>
 </section>
-
-<script>
-document.addEventListener('DOMContentLoaded', function() {
-    const consultationTypes = document.querySelectorAll('.consultation-type');
-    const dateTimeSelection = document.getElementById('dateTimeSelection');
-    const consultationDate = document.getElementById('consultationDate');
-    const timeSlots = document.querySelectorAll('.time-slot');
-    const continueBtn = document.getElementById('continueBtn');
-    const errorMessage = document.getElementById('errorMessage');
-    
-    let selectedType = '';
-    let selectedTime = '';
-    
-    // Select consultation type
-    consultationTypes.forEach(type => {
-        type.addEventListener('click', function() {
-            // Remove selected class from all types
-            consultationTypes.forEach(t => t.style.boxShadow = '0 5px 15px rgba(0,0,0,0.05)');
-            
-            // Add selected class to clicked type
-            this.style.boxShadow = '0 5px 20px rgba(0,0,0,0.15)';
-            selectedType = this.getAttribute('data-type');
-            
-            // Show date and time selection
-            dateTimeSelection.style.display = 'block';
-            
-            // Scroll to date and time selection
-            dateTimeSelection.scrollIntoView({ behavior: 'smooth', block: 'start' });
-        });
-    });
-    
-    // Date input change
-    consultationDate.addEventListener('change', function() {
-        // Reset time slot selection
-        timeSlots.forEach(slot => slot.classList.remove('selected'));
-        timeSlots.forEach(slot => slot.style.backgroundColor = '');
-        timeSlots.forEach(slot => slot.style.color = '');
-        timeSlots.forEach(slot => slot.style.borderColor = '#ddd');
-        
-        selectedTime = '';
-        continueBtn.disabled = true;
-        
-        // In a real app, you would check availability from database
-        // For this demo, we'll just enable all time slots
-        timeSlots.forEach(slot => {
-            slot.style.display = 'block';
-        });
-    });
-    
-    // Select time slot
-    timeSlots.forEach(slot => {
-        slot.addEventListener('click', function() {
-            if (consultationDate.value === '') {
-                showError('Please select a date first');
-                return;
-            }
-            
-            // Remove selected class from all slots
-            timeSlots.forEach(s => s.classList.remove('selected'));
-            timeSlots.forEach(s => s.style.backgroundColor = '');
-            timeSlots.forEach(s => s.style.color = '');
-            timeSlots.forEach(s => s.style.borderColor = '#ddd');
-            
-            // Add selected class to clicked slot
-            this.classList.add('selected');
-            this.style.backgroundColor = 'var(--color-burgundy)';
-            this.style.color = 'white';
-            this.style.borderColor = 'var(--color-burgundy)';
-            
-            selectedTime = this.getAttribute('data-time');
-            
-            // Enable continue button
-            continueBtn.disabled = false;
-        });
-    });
-    
-    // Continue button click
-    continueBtn.addEventListener('click', function() {
-        if (selectedType === '' || consultationDate.value === '' || selectedTime === '') {
-            showError('Please complete all selections');
-            return;
-        }
-        
-        // Redirect to details page with selected options
-        window.location.href = `consultant_details.php?type=${encodeURIComponent(selectedType)}&date=${encodeURIComponent(consultationDate.value)}&time=${encodeURIComponent(selectedTime)}`;
-    });
-    
-    function showError(message) {
-        errorMessage.textContent = message;
-        errorMessage.style.display = 'block';
-        
-        // Hide error message after 3 seconds
-        setTimeout(() => {
-            errorMessage.style.display = 'none';
-        }, 3000);
-    }
-});
-</script>
 
 <?php include('includes/footer.php'); ?>
 
