@@ -1,0 +1,359 @@
+/* Consultant pages styling */
+
+/* General Consultant Page Styling */
+.consultant-hero {
+  background-color: #f8f9fa;
+  padding: 3rem 0;
+}
+
+.consultant-hero h1 {
+  color: #042167;
+  margin-bottom: 1rem;
+}
+
+/* Filters card styling */
+.filters-card {
+  transition: all 0.3s ease;
+  margin-bottom: 2rem;
+}
+
+.filters-card:hover {
+  box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15) !important;
+}
+
+/* Consultant Cards */
+.consultant-card {
+  transition: all 0.3s ease;
+  height: 100%;
+}
+
+.consultant-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15) !important;
+}
+
+.consultant-card.featured {
+  border-color: #eaaa34 !important;
+}
+
+.featured-badge {
+  background-color: #eaaa34 !important;
+  color: white;
+}
+
+.consultant-image {
+  width: 100px;
+  height: 100px;
+  object-fit: cover;
+  margin-bottom: 1rem;
+  border: 3px solid #f8f9fa;
+}
+
+.consultant-specialties, 
+.consultant-languages {
+  font-size: 0.9rem;
+  color: #6c757d;
+}
+
+.consultation-fees {
+  font-size: 0.85rem;
+}
+
+.view-profile-btn {
+  background-color: #042167;
+  border-color: #042167;
+  transition: all 0.3s ease;
+}
+
+.view-profile-btn:hover {
+  background-color: #eaaa34;
+  border-color: #eaaa34;
+}
+
+/* Consultant Profile Styling */
+.profile-header {
+  background-color: #f8f9fa;
+  padding: 3rem 0;
+}
+
+.profile-header h1 {
+  color: #042167;
+  margin-bottom: 0.5rem;
+}
+
+.profile-photo {
+  width: 150px;
+  height: 150px;
+  object-fit: cover;
+  border: 4px solid #fff;
+  box-shadow: 0 0.25rem 0.5rem rgba(0, 0, 0, 0.1);
+}
+
+.license-number {
+  color: #6c757d;
+  font-size: 0.9rem;
+}
+
+.specialty-badge {
+  background-color: #e9ecef;
+  color: #495057;
+  margin-right: 0.5rem;
+  margin-bottom: 0.5rem;
+  display: inline-block;
+  padding: 0.25rem 0.5rem;
+  border-radius: 0.25rem;
+  font-size: 0.85rem;
+}
+
+.consultation-type-card {
+  transition: all 0.3s ease;
+  text-align: center;
+  padding: 1.5rem;
+}
+
+.consultation-type-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.1) !important;
+}
+
+.consultation-icon {
+  font-size: 2rem;
+  color: #042167;
+  margin-bottom: 1rem;
+}
+
+.consultation-price {
+  font-weight: bold;
+  color: #042167;
+  font-size: 1.25rem;
+}
+
+/* Booking Form */
+.booking-form {
+  padding: 3rem 0;
+}
+
+.booking-card {
+  box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.1);
+  border: none;
+  border-radius: 0.5rem;
+}
+
+.booking-card-header {
+  background-color: #042167;
+  color: white;
+  padding: 1.5rem;
+  border-top-left-radius: 0.5rem;
+  border-top-right-radius: 0.5rem;
+}
+
+.date-picker {
+  border: 1px solid #ced4da;
+  border-radius: 0.25rem;
+  padding: 0.5rem;
+}
+
+.time-slot-btn {
+  display: inline-block;
+  padding: 0.5rem 1rem;
+  margin: 0.25rem;
+  border: 1px solid #ced4da;
+  border-radius: 0.25rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.time-slot-btn:hover,
+.time-slot-btn.selected {
+  background-color: #042167;
+  color: white;
+  border-color: #042167;
+}
+
+.booking-submit-btn {
+  background-color: #eaaa34;
+  border-color: #eaaa34;
+  padding: 0.75rem 2rem;
+  font-weight: bold;
+  transition: all 0.3s ease;
+}
+
+.booking-submit-btn:hover {
+  background-color: #d69c30;
+  border-color: #d69c30;
+}
+
+/* Booking confirmation */
+.booking-confirmation-container {
+  padding: 3rem 0;
+}
+
+.confirmation-icon {
+  font-size: 5rem;
+  color: #28a745;
+  margin-bottom: 1.5rem;
+}
+
+.booking-details-card {
+  box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.1);
+  border: none;
+  border-radius: 0.5rem;
+  margin-bottom: 2rem;
+}
+
+.booking-details-header {
+  background-color: #042167;
+  color: white;
+  padding: 1.5rem;
+  border-top-left-radius: 0.5rem;
+  border-top-right-radius: 0.5rem;
+}
+
+.whats-next-alert {
+  background-color: #e9f6fd;
+  border-color: #b5e3f7;
+  color: #0c5460;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .profile-header {
+    text-align: center;
+  }
+  
+  .profile-photo {
+    margin-bottom: 1.5rem;
+  }
+  
+  .consultation-type-card {
+    margin-bottom: 1rem;
+  }
+}
+
+/* Consultant CSS - Styles for consultant listing and profile pages */
+
+/* Consultant Listing Page */
+.search-filters {
+    background-color: #f8f9fa;
+    border-radius: 0.5rem;
+    padding: 1.5rem;
+    margin-bottom: 2rem;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+.search-filters .form-group {
+    margin-bottom: 1rem;
+}
+
+.consultant-card {
+    border-radius: 0.5rem;
+    overflow: hidden;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    margin-bottom: 1.5rem;
+    height: 100%;
+}
+
+.consultant-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+}
+
+.consultant-card .card-img-top {
+    height: 200px;
+    object-fit: cover;
+}
+
+.consultant-card .card-body {
+    padding: 1.25rem;
+}
+
+.consultant-info {
+    margin-bottom: 0.75rem;
+}
+
+.consultant-specialties {
+    margin-bottom: 0.75rem;
+}
+
+.consultant-languages {
+    margin-bottom: 1rem;
+}
+
+.consultant-rating {
+    color: #ffc107;
+    margin-right: 0.5rem;
+}
+
+.consultant-price {
+    font-weight: bold;
+    color: #28a745;
+}
+
+/* Consultant Profile Page */
+.consultant-profile-card {
+    border: none;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    border-radius: 0.5rem;
+}
+
+.consultant-profile-photo img {
+    width: 150px;
+    height: 150px;
+    object-fit: cover;
+    border: 3px solid #fff;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+.consultant-profile-info h1 {
+    margin-bottom: 0.5rem;
+    font-weight: 600;
+}
+
+.specialty-badges, .language-badges {
+    display: flex;
+    flex-wrap: wrap;
+    margin-top: 0.5rem;
+}
+
+.review-item {
+    padding-bottom: 1rem;
+}
+
+.review-rating {
+    font-size: 0.9rem;
+}
+
+.booking-card {
+    border: none;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    border-radius: 0.5rem;
+}
+
+.booking-btn {
+    padding: 0.75rem;
+    font-weight: 500;
+}
+
+.booking-success {
+    margin-bottom: 0;
+}
+
+.booking-fee-info {
+    border-top: 1px dashed #dee2e6;
+    padding-top: 1rem;
+}
+
+/* Media Queries */
+@media (max-width: 767.98px) {
+    .consultant-profile-photo img {
+        width: 120px;
+        height: 120px;
+        margin: 0 auto 1rem;
+        display: block;
+    }
+    
+    .booking-card {
+        position: static !important;
+        margin-top: 1.5rem;
+    }
+} 

@@ -87,9 +87,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $types = "sississsi";
             
             if ($profile_image) {
-                $sql .= ", profile_image = ?";
-                $params[] = $profile_image;
-                $types .= "s";
+                // Check if profile_image column exists
+                $column_check = $conn->query("SHOW COLUMNS FROM `professionals` LIKE 'profile_image'");
+                if($column_check->num_rows > 0) {
+                    $sql .= ", profile_image = ?";
+                    $params[] = $profile_image;
+                    $types .= "s";
+                }
             }
             
             $sql .= " WHERE user_id = ?";
@@ -112,9 +116,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $types = "isissssssi";
             
             if ($profile_image) {
-                $sql .= ", profile_image";
-                $params[] = $profile_image;
-                $types .= "s";
+                // Check if profile_image column exists
+                $column_check = $conn->query("SHOW COLUMNS FROM `professionals` LIKE 'profile_image'");
+                if($column_check->num_rows > 0) {
+                    $sql .= ", profile_image";
+                    $params[] = $profile_image;
+                    $types .= "s";
+                }
             }
             
             $sql .= ") VALUES (" . str_repeat("?,", count($params) - 1) . "?)";

@@ -57,6 +57,7 @@ $base = isset($base_path) ? $base_path : $base_url;
     <link rel="stylesheet" href="<?php echo $base; ?>/assets/css/assessment-drawer.css">
     <link rel="stylesheet" href="<?php echo $base; ?>/assets/css/news.css">
     <link rel="stylesheet" href="<?php echo $base; ?>/assets/css/faq.css">
+    <link rel="stylesheet" href="<?php echo $base; ?>/assets/css/consultant.css">
         
     <!-- Libraries -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/aos/2.3.4/aos.css">

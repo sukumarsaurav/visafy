@@ -77,6 +77,15 @@ if (isset($_POST['register'])) {
                         $fee_stmt->execute();
                     }
                 }
+                
+                // If applicant and there's a pending booking, log them in and redirect to complete booking
+                if ($user_type === 'applicant' && isset($_SESSION['pending_booking'])) {
+                    $_SESSION['user_id'] = $conn->insert_id;
+                    $_SESSION['user_type'] = $user_type;
+                    $_SESSION['user_status'] = 'active';
+                    header("Location: process-booking.php");
+                    exit();
+                }
             } else {
                 $error = "Registration failed. Please try again.";
             }
@@ -104,6 +113,12 @@ if (isset($_POST['login'])) {
                     $_SESSION['user_id'] = $user['id'];
                     $_SESSION['user_type'] = $user['user_type'];
                     $_SESSION['user_status'] = $user['status'];
+                    
+                    // Check if there's a pending booking
+                    if (isset($_SESSION['pending_booking']) && $user['user_type'] === 'applicant') {
+                        header("Location: process-booking.php");
+                        exit();
+                    }
                     
                     // Redirect based on user type
                     switch($user['user_type']) {
@@ -300,6 +315,12 @@ if (isset($_POST['login'])) {
 </head>
 <body>
     <div class="container">
+        <?php if (isset($_GET['booking']) && $_GET['booking'] === 'true'): ?>
+            <div class="alert alert-info mb-4">
+                <h4 class="alert-heading">One step to complete your booking!</h4>
+                <p>Please log in or create an account to complete your consultation booking.</p>
+            </div>
+        <?php endif; ?>
         <div class="auth-container">
             <!-- Login Section -->
             <div class="auth-section">

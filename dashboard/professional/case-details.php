@@ -3,310 +3,441 @@ session_start();
 require_once '../../config/database.php';
 require_once '../../includes/functions.php';
 
-// Check if professional is logged in
-if (!isset($_SESSION['user_id']) || $_SESSION['user_type'] !== 'professional') {
-    header('Location: ../login.php');
+// Check if user is logged in and is a professional
+if (!isset($_SESSION['user_id']) || empty($_SESSION['user_id']) || $_SESSION['user_type'] != 'professional') {
+    header("Location: ../../login.php");
     exit;
 }
 
-$professionalId = $_SESSION['user_id'];
-$caseId = isset($_GET['id']) ? intval($_GET['id']) : 0;
+$user_id = $_SESSION['user_id'];
+$success_message = '';
+$error_message = '';
 
-if ($caseId === 0) {
-    header('Location: dashboard.php');
+// Check if case ID is provided
+if (!isset($_GET['id']) || empty($_GET['id'])) {
+    header("Location: cases.php");
     exit;
 }
 
-// Fetch case details
-$stmt = $pdo->prepare("
-    SELECT ca.*, u.first_name, u.last_name, u.email, u.profile_image
-    FROM case_applications ca
-    JOIN users u ON ca.client_id = u.id
-    JOIN professional_clients pc ON pc.client_id = ca.client_id
-    WHERE ca.id = ? AND pc.professional_id = ?
-");
-$stmt->execute([$caseId, $professionalId]);
-$case = $stmt->fetch(PDO::FETCH_ASSOC);
+$case_id = (int)$_GET['id'];
 
-if (!$case) {
-    header('Location: dashboard.php');
+// Verify this professional has access to this case
+$stmt = $conn->prepare("SELECT ca.*, u.name as client_name, u.email as client_email, 
+                      v.name as visa_type_name, v.description as visa_type_description
+                      FROM case_applications ca 
+                      JOIN users u ON ca.client_id = u.id 
+                      JOIN visa_types v ON ca.visa_type_id = v.id 
+                      WHERE ca.id = ? AND ca.professional_id = ?");
+$stmt->bind_param("ii", $case_id, $user_id);
+$stmt->execute();
+$result = $stmt->get_result();
+
+if ($result->num_rows == 0) {
+    // No access or case doesn't exist
+    header("Location: cases.php?error=noaccess");
     exit;
 }
 
-// Update case status if form is submitted
-if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['update_status'])) {
-    $newStatus = filter_input(INPUT_POST, 'status', FILTER_SANITIZE_STRING);
-    
-    $updateStmt = $pdo->prepare("UPDATE case_applications SET status = ? WHERE id = ?");
-    $updateSuccess = $updateStmt->execute([$newStatus, $caseId]);
-    
-    if ($updateSuccess) {
-        $successMessage = "Case status updated successfully.";
-        $case['status'] = $newStatus;
-    } else {
-        $errorMessage = "Failed to update case status.";
-    }
-}
+$case_data = $result->fetch_assoc();
+$stmt->close();
 
-// Fetch case documents
-$docStmt = $pdo->prepare("
-    SELECT * FROM documents 
-    WHERE case_id = ? 
-    ORDER BY upload_date DESC
-");
-$docStmt->execute([$caseId]);
-$documents = $docStmt->fetchAll(PDO::FETCH_ASSOC);
-
-// Get notes related to this case
-$notesStmt = $pdo->prepare("
-    SELECT n.id, n.content, n.created_at, n.is_private, n.user_type, 
-           CASE 
-               WHEN n.user_type = 'professional' THEN p.name
-               WHEN n.user_type = 'client' THEN u.name 
-               ELSE 'System'
-           END as author_name
-    FROM case_notes n
-    LEFT JOIN professionals p ON n.user_id = p.id AND n.user_type = 'professional'
-    LEFT JOIN users u ON n.user_id = u.id AND n.user_type = 'client'
-    WHERE n.case_id = ?
-    ORDER BY n.created_at DESC
-");
-$notesStmt->execute([$caseId]);
-$notes = $notesStmt->fetchAll(PDO::FETCH_ASSOC);
-
-// Add a new note if form is submitted
+// Process add note form
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['add_note'])) {
-    $noteContent = filter_input(INPUT_POST, 'note_content', FILTER_SANITIZE_STRING);
-    $isPrivate = isset($_POST['is_private']) ? 1 : 0;
+    $note_content = htmlspecialchars(trim($_POST['note_content']));
+    $is_private = isset($_POST['is_private']) ? 1 : 0;
     
-    if (!empty($noteContent)) {
-        $addNoteStmt = $pdo->prepare("
-            INSERT INTO case_notes (case_id, user_id, content, created_at, is_private, user_type)
-            VALUES (?, ?, ?, NOW(), ?, 'professional')
-        ");
-        $noteAdded = $addNoteStmt->execute([$caseId, $professionalId, $noteContent, $isPrivate]);
-        
-        if ($noteAdded) {
-            // Refresh page to show the new note
-            header("Location: case-details.php?id=" . $caseId);
-            exit;
-        } else {
-            $errorMessage = "Failed to add note. Please try again.";
-        }
+    if (empty($note_content)) {
+        $error_message = "Note content cannot be empty";
     } else {
-        $errorMessage = "Note content cannot be empty.";
+        $stmt = $conn->prepare("INSERT INTO case_notes (case_id, user_id, user_type, content, is_private) 
+                                VALUES (?, ?, 'professional', ?, ?)");
+        $stmt->bind_param("iisi", $case_id, $user_id, $note_content, $is_private);
+        
+        if ($stmt->execute()) {
+            $success_message = "Note added successfully!";
+        } else {
+            $error_message = "Error adding note: " . $stmt->error;
+        }
+        $stmt->close();
     }
 }
 
-// Function to get appropriate badge class for case status
-function getCaseStatusBadgeClass($status) {
-    switch ($status) {
-        case 'new':
-            return 'bg-primary';
-        case 'in_progress':
-            return 'bg-info';
-        case 'pending_documents':
-            return 'bg-warning';
-        case 'review':
-            return 'bg-secondary';
-        case 'approved':
-            return 'bg-success';
-        case 'rejected':
-            return 'bg-danger';
-        default:
-            return 'bg-secondary';
-    }
+// Fetch case notes
+$notes = [];
+$stmt = $conn->prepare("SELECT cn.*, u.name as user_name, u.email as user_email 
+                      FROM case_notes cn 
+                      JOIN users u ON cn.user_id = u.id 
+                      WHERE cn.case_id = ? 
+                      ORDER BY cn.created_at DESC");
+$stmt->bind_param("i", $case_id);
+$stmt->execute();
+$result = $stmt->get_result();
+while ($row = $result->fetch_assoc()) {
+    $notes[] = $row;
 }
+$stmt->close();
 
-// Format case status for display
-function formatCaseStatus($status) {
-    return ucwords(str_replace('_', ' ', $status));
+// Fetch documents
+$documents = [];
+$stmt = $conn->prepare("SELECT d.*, dt.name as document_type_name 
+                      FROM documents d 
+                      JOIN document_types dt ON d.document_type_id = dt.id 
+                      WHERE d.case_id = ? 
+                      ORDER BY d.uploaded_at DESC");
+$stmt->bind_param("i", $case_id);
+$stmt->execute();
+$result = $stmt->get_result();
+while ($row = $result->fetch_assoc()) {
+    $documents[] = $row;
 }
+$stmt->close();
 
+// Page title
+$page_title = "Case Details | Visafy";
 include '../includes/header.php';
 ?>
+
+<link rel="stylesheet" href="../../assets/css/consultant.css">
 
 <div class="container-fluid">
     <div class="row">
         <?php include '../includes/sidebar.php'; ?>
-        
+
         <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
             <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
                 <h1 class="h2">Case Details</h1>
                 <div class="btn-toolbar mb-2 mb-md-0">
-                    <a href="client-details.php?id=<?php echo $case['client_id']; ?>" class="btn btn-sm btn-outline-secondary me-2">
-                        <i class="bi bi-arrow-left"></i> Back to Client
+                    <a href="cases.php" class="btn btn-sm btn-outline-secondary">
+                        <i class="bi bi-arrow-left"></i> Back to Cases
                     </a>
                 </div>
             </div>
-            
-            <?php if (isset($successMessage)): ?>
-                <div class="alert alert-success" role="alert">
-                    <?php echo $successMessage; ?>
+
+            <?php if (!empty($success_message)): ?>
+                <div class="alert alert-success alert-dismissible fade show" role="alert">
+                    <?php echo $success_message; ?>
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                 </div>
             <?php endif; ?>
-            
-            <?php if (isset($errorMessage)): ?>
-                <div class="alert alert-danger" role="alert">
-                    <?php echo $errorMessage; ?>
+
+            <?php if (!empty($error_message)): ?>
+                <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                    <?php echo $error_message; ?>
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                 </div>
             <?php endif; ?>
-            
+
+            <!-- Case Overview -->
             <div class="row mb-4">
-                <div class="col-md-12">
-                    <div class="card">
-                        <div class="card-header">
-                            <div class="d-flex justify-content-between align-items-center">
-                                <h5 class="mb-0">Case Overview</h5>
-                                <span class="badge <?php echo getCaseStatusBadgeClass($case['status']); ?>">
-                                    <?php echo formatCaseStatus($case['status']); ?>
-                                </span>
-                            </div>
+                <div class="col-md-6">
+                    <div class="card border-0 shadow-sm h-100">
+                        <div class="card-header bg-primary text-white">
+                            <h5 class="mb-0">Case Information</h5>
                         </div>
                         <div class="card-body">
-                            <div class="row">
-                                <div class="col-md-6">
-                                    <h6>Client Information</h6>
-                                    <div class="d-flex align-items-center mb-3">
-                                        <div class="avatar-wrapper me-3">
-                                            <?php if ($case['profile_image']): ?>
-                                                <img src="../../uploads/profile/<?php echo $case['profile_image']; ?>" class="rounded-circle" width="50" height="50" alt="Profile">
-                                            <?php else: ?>
-                                                <div class="avatar-placeholder rounded-circle bg-secondary d-flex align-items-center justify-content-center" style="width: 50px; height: 50px;">
-                                                    <span class="text-white"><?php echo substr($case['first_name'], 0, 1) . substr($case['last_name'], 0, 1); ?></span>
-                                                </div>
-                                            <?php endif; ?>
-                                        </div>
-                                        <div>
-                                            <h6 class="mb-0"><?php echo htmlspecialchars($case['first_name'] . ' ' . $case['last_name']); ?></h6>
-                                            <small class="text-muted"><?php echo htmlspecialchars($case['email']); ?></small>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="col-md-6">
-                                    <h6>Case Information</h6>
-                                    <p><strong>Visa Type:</strong> <?php echo htmlspecialchars($case['visa_type']); ?></p>
-                                    <p><strong>Application Date:</strong> <?php echo date('F j, Y', strtotime($case['application_date'])); ?></p>
-                                    <p><strong>Reference Number:</strong> <?php echo htmlspecialchars($case['reference_number']); ?></p>
+                            <div class="mb-3">
+                                <p class="mb-1 text-muted small">Reference Number</p>
+                                <h5><?php echo htmlspecialchars($case_data['reference_number']); ?></h5>
+                            </div>
+                            <div class="mb-3">
+                                <p class="mb-1 text-muted small">Status</p>
+                                <?php
+                                $status_badge = '';
+                                switch ($case_data['status']) {
+                                    case 'new':
+                                        $status_badge = 'primary';
+                                        break;
+                                    case 'in_progress':
+                                        $status_badge = 'info';
+                                        break;
+                                    case 'pending_documents':
+                                        $status_badge = 'warning';
+                                        break;
+                                    case 'review':
+                                        $status_badge = 'secondary';
+                                        break;
+                                    case 'approved':
+                                        $status_badge = 'success';
+                                        break;
+                                    case 'rejected':
+                                        $status_badge = 'danger';
+                                        break;
+                                }
+                                ?>
+                                <h5><span class="badge bg-<?php echo $status_badge; ?>">
+                                    <?php echo ucwords(str_replace('_', ' ', $case_data['status'])); ?>
+                                </span></h5>
+                            </div>
+                            <div class="mb-3">
+                                <p class="mb-1 text-muted small">Visa Type</p>
+                                <h5><?php echo htmlspecialchars($case_data['visa_type_name']); ?></h5>
+                                <p class="small text-muted"><?php echo htmlspecialchars($case_data['visa_type_description']); ?></p>
+                            </div>
+                            <div class="mb-3">
+                                <p class="mb-1 text-muted small">Created</p>
+                                <p><?php echo date('F j, Y', strtotime($case_data['created_at'])); ?></p>
+                            </div>
+                            <div>
+                                <p class="mb-1 text-muted small">Last Updated</p>
+                                <p><?php echo date('F j, Y', strtotime($case_data['updated_at'])); ?></p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-6">
+                    <div class="card border-0 shadow-sm h-100">
+                        <div class="card-header bg-primary text-white">
+                            <h5 class="mb-0">Client Information</h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="mb-3">
+                                <p class="mb-1 text-muted small">Name</p>
+                                <h5><?php echo htmlspecialchars($case_data['client_name']); ?></h5>
+                            </div>
+                            <div class="mb-3">
+                                <p class="mb-1 text-muted small">Email</p>
+                                <p><a href="mailto:<?php echo htmlspecialchars($case_data['client_email']); ?>"><?php echo htmlspecialchars($case_data['client_email']); ?></a></p>
+                            </div>
+                            <div class="mt-4">
+                                <h6>Quick Actions</h6>
+                                <div class="d-grid gap-2">
+                                    <button type="button" class="btn btn-outline-primary" data-bs-toggle="modal" data-bs-target="#addNoteModal">
+                                        <i class="bi bi-plus-circle"></i> Add Note
+                                    </button>
+                                    <a href="documents.php?case_id=<?php echo $case_id; ?>" class="btn btn-outline-info">
+                                        <i class="bi bi-file-earmark-arrow-up"></i> Upload Document
+                                    </a>
+                                    <button type="button" class="btn btn-outline-secondary" data-bs-toggle="modal" data-bs-target="#updateStatusModalDetail">
+                                        <i class="bi bi-arrow-repeat"></i> Update Status
+                                    </button>
                                 </div>
                             </div>
-                            
-                            <form method="POST" class="mt-3">
-                                <div class="row align-items-end">
-                                    <div class="col-md-6">
-                                        <label for="status" class="form-label">Update Status</label>
-                                        <select class="form-select" name="status" id="status">
-                                            <option value="new" <?php echo $case['status'] === 'new' ? 'selected' : ''; ?>>New</option>
-                                            <option value="in_progress" <?php echo $case['status'] === 'in_progress' ? 'selected' : ''; ?>>In Progress</option>
-                                            <option value="pending_documents" <?php echo $case['status'] === 'pending_documents' ? 'selected' : ''; ?>>Pending Documents</option>
-                                            <option value="review" <?php echo $case['status'] === 'review' ? 'selected' : ''; ?>>Under Review</option>
-                                            <option value="approved" <?php echo $case['status'] === 'approved' ? 'selected' : ''; ?>>Approved</option>
-                                            <option value="rejected" <?php echo $case['status'] === 'rejected' ? 'selected' : ''; ?>>Rejected</option>
-                                        </select>
-                                    </div>
-                                    <div class="col-md-6">
-                                        <button type="submit" name="update_status" class="btn btn-primary">Update Status</button>
-                                    </div>
-                                </div>
-                            </form>
                         </div>
                     </div>
                 </div>
             </div>
-            
-            <div class="row">
-                <div class="col-md-6 mb-4">
-                    <div class="card h-100">
-                        <div class="card-header d-flex justify-content-between align-items-center">
-                            <h5 class="mb-0">Documents</h5>
-                            <a href="upload-document.php?case_id=<?php echo $caseId; ?>" class="btn btn-sm btn-outline-primary">
-                                <i class="bi bi-upload"></i> Upload Document
-                            </a>
-                        </div>
+
+            <!-- Tabs for Notes and Documents -->
+            <ul class="nav nav-tabs mb-4" id="caseTab" role="tablist">
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link active" id="notes-tab" data-bs-toggle="tab" data-bs-target="#notes" type="button" role="tab" aria-controls="notes" aria-selected="true">Notes</button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="documents-tab" data-bs-toggle="tab" data-bs-target="#documents" type="button" role="tab" aria-controls="documents" aria-selected="false">Documents</button>
+                </li>
+            </ul>
+
+            <div class="tab-content" id="caseTabContent">
+                <!-- Notes Tab -->
+                <div class="tab-pane fade show active" id="notes" role="tabpanel" aria-labelledby="notes-tab">
+                    <div class="card border-0 shadow-sm mb-4">
                         <div class="card-body">
-                            <?php if (count($documents) > 0): ?>
-                                <div class="list-group">
-                                    <?php foreach ($documents as $document): ?>
-                                        <div class="list-group-item list-group-item-action d-flex justify-content-between align-items-center">
-                                            <div>
-                                                <h6 class="mb-1"><?php echo htmlspecialchars($document['title']); ?></h6>
-                                                <small class="text-muted">
-                                                    Uploaded on <?php echo date('M j, Y', strtotime($document['upload_date'])); ?>
-                                                </small>
-                                            </div>
-                                            <div>
-                                                <a href="../../uploads/documents/<?php echo $document['file_path']; ?>" class="btn btn-sm btn-outline-secondary" target="_blank">
-                                                    <i class="bi bi-eye"></i>
-                                                </a>
-                                                <a href="../../uploads/documents/<?php echo $document['file_path']; ?>" download class="btn btn-sm btn-outline-primary">
-                                                    <i class="bi bi-download"></i>
-                                                </a>
-                                            </div>
-                                        </div>
-                                    <?php endforeach; ?>
+                            <?php if (empty($notes)): ?>
+                                <div class="text-center py-5">
+                                    <i class="bi bi-chat-square-text text-muted" style="font-size: 3rem;"></i>
+                                    <p class="mt-3 mb-0 text-muted">No notes yet. Add the first note to this case.</p>
                                 </div>
                             <?php else: ?>
-                                <p class="text-muted">No documents have been uploaded for this case.</p>
-                            <?php endif; ?>
-                        </div>
-                    </div>
-                </div>
-                
-                <div class="col-md-6 mb-4">
-                    <div class="card h-100">
-                        <div class="card-header">
-                            <h5 class="mb-0">Case Notes</h5>
-                        </div>
-                        <div class="card-body">
-                            <form method="POST" class="mb-3">
-                                <div class="mb-3">
-                                    <label for="note_content" class="form-label">Add Note</label>
-                                    <textarea class="form-control" id="note_content" name="note_content" rows="3" required></textarea>
-                                </div>
-                                <div class="mb-3 form-check">
-                                    <input type="checkbox" class="form-check-input" id="is_private" name="is_private" value="1">
-                                    <label class="form-check-label" for="is_private">
-                                        Private Note (only visible to professionals)
-                                    </label>
-                                </div>
-                                <button type="submit" name="add_note" class="btn btn-primary">Add Note</button>
-                            </form>
-                            
-                            <hr>
-                            
-                            <!-- Display Notes -->
-                            <h5 class="mt-4">Case Notes</h5>
-                            <?php if (!empty($notes)): ?>
-                                <div class="list-group mb-3">
+                                <div class="timeline">
                                     <?php foreach ($notes as $note): ?>
-                                        <?php 
-                                            $noteTypeClass = $note['user_type'] === 'professional' ? 'list-group-item-info' : ($note['user_type'] === 'client' ? 'list-group-item-warning' : 'list-group-item-light');
-                                        ?>
-                                        <div class="list-group-item <?php echo $noteTypeClass; ?>">
-                                            <div class="d-flex w-100 justify-content-between">
-                                                <h6 class="mb-1">
-                                                    <?php echo htmlspecialchars($note['author_name']); ?> 
-                                                    (<?php echo ucfirst($note['user_type']); ?>)
-                                                    <?php if (isset($note['is_private']) && $note['is_private'] == 1): ?>
-                                                        <span class="badge bg-danger">Private</span>
-                                                    <?php endif; ?>
-                                                </h6>
-                                                <small><?php echo htmlspecialchars(date('M j, Y g:i A', strtotime($note['created_at']))); ?></small>
+                                        <div class="timeline-item">
+                                            <div class="card mb-3 <?php echo $note['is_private'] ? 'bg-light' : ''; ?>">
+                                                <div class="card-header bg-transparent d-flex justify-content-between align-items-center">
+                                                    <div>
+                                                        <strong><?php echo htmlspecialchars($note['user_name']); ?></strong>
+                                                        <span class="text-muted ms-2"><?php echo $note['user_type']; ?></span>
+                                                        <?php if ($note['is_private']): ?>
+                                                            <span class="badge bg-warning ms-2">Private</span>
+                                                        <?php endif; ?>
+                                                    </div>
+                                                    <small class="text-muted"><?php echo date('M j, Y g:i A', strtotime($note['created_at'])); ?></small>
+                                                </div>
+                                                <div class="card-body">
+                                                    <p class="card-text"><?php echo nl2br(htmlspecialchars($note['content'])); ?></p>
+                                                </div>
                                             </div>
-                                            <p class="mb-1"><?php echo nl2br(htmlspecialchars($note['content'])); ?></p>
                                         </div>
                                     <?php endforeach; ?>
                                 </div>
+                            <?php endif; ?>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Documents Tab -->
+                <div class="tab-pane fade" id="documents" role="tabpanel" aria-labelledby="documents-tab">
+                    <div class="card border-0 shadow-sm mb-4">
+                        <div class="card-body">
+                            <?php if (empty($documents)): ?>
+                                <div class="text-center py-5">
+                                    <i class="bi bi-file-earmark-text text-muted" style="font-size: 3rem;"></i>
+                                    <p class="mt-3 mb-0 text-muted">No documents yet. Upload the first document for this case.</p>
+                                </div>
                             <?php else: ?>
-                                <p>No notes available.</p>
+                                <div class="table-responsive">
+                                    <table class="table table-hover align-middle">
+                                        <thead>
+                                            <tr>
+                                                <th>Document</th>
+                                                <th>Type</th>
+                                                <th>Uploaded By</th>
+                                                <th>Date</th>
+                                                <th>Actions</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <?php foreach ($documents as $document): ?>
+                                                <tr>
+                                                    <td>
+                                                        <div class="d-flex align-items-center">
+                                                            <i class="bi bi-file-earmark-text me-2 text-primary" style="font-size: 1.5rem;"></i>
+                                                            <div>
+                                                                <strong><?php echo htmlspecialchars($document['name']); ?></strong>
+                                                                <?php if (!empty($document['description'])): ?>
+                                                                    <p class="mb-0 small text-muted"><?php echo htmlspecialchars($document['description']); ?></p>
+                                                                <?php endif; ?>
+                                                            </div>
+                                                        </div>
+                                                    </td>
+                                                    <td><?php echo htmlspecialchars($document['document_type_name']); ?></td>
+                                                    <td>
+                                                        <?php if ($document['professional_id'] == $user_id): ?>
+                                                            <span class="badge bg-info">You</span>
+                                                        <?php else: ?>
+                                                            <span class="badge bg-secondary">Client</span>
+                                                        <?php endif; ?>
+                                                    </td>
+                                                    <td><?php echo date('M j, Y', strtotime($document['uploaded_at'])); ?></td>
+                                                    <td>
+                                                        <a href="../../<?php echo htmlspecialchars($document['file_path']); ?>" class="btn btn-sm btn-outline-primary" target="_blank">
+                                                            <i class="bi bi-eye"></i> View
+                                                        </a>
+                                                    </td>
+                                                </tr>
+                                            <?php endforeach; ?>
+                                        </tbody>
+                                    </table>
+                                </div>
                             <?php endif; ?>
                         </div>
                     </div>
                 </div>
             </div>
-            
         </main>
     </div>
 </div>
+
+<!-- Add Note Modal -->
+<div class="modal fade" id="addNoteModal" tabindex="-1" aria-labelledby="addNoteModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="addNoteModalLabel">Add Note to Case</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form action="" method="POST">
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label for="note_content" class="form-label">Note Content</label>
+                        <textarea class="form-control" id="note_content" name="note_content" rows="5" required></textarea>
+                    </div>
+                    <div class="form-check mb-3">
+                        <input class="form-check-input" type="checkbox" id="is_private" name="is_private">
+                        <label class="form-check-label" for="is_private">
+                            Make this note private (only visible to professionals)
+                        </label>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" name="add_note" class="btn btn-primary">Add Note</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Update Status Modal -->
+<div class="modal fade" id="updateStatusModalDetail" tabindex="-1" aria-labelledby="updateStatusModalDetailLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="updateStatusModalDetailLabel">
+                    Update Status: <?php echo htmlspecialchars($case_data['reference_number']); ?>
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form action="" method="POST">
+                <div class="modal-body">
+                    <input type="hidden" name="case_id" value="<?php echo $case_id; ?>">
+                    
+                    <div class="mb-3">
+                        <label for="new_status" class="form-label">New Status</label>
+                        <select class="form-select" id="new_status" name="new_status" required>
+                            <option value="">Select Status</option>
+                            <option value="new" <?php echo $case_data['status'] == 'new' ? 'selected' : ''; ?>>New</option>
+                            <option value="in_progress" <?php echo $case_data['status'] == 'in_progress' ? 'selected' : ''; ?>>In Progress</option>
+                            <option value="pending_documents" <?php echo $case_data['status'] == 'pending_documents' ? 'selected' : ''; ?>>Pending Documents</option>
+                            <option value="review" <?php echo $case_data['status'] == 'review' ? 'selected' : ''; ?>>Under Review</option>
+                            <option value="approved" <?php echo $case_data['status'] == 'approved' ? 'selected' : ''; ?>>Approved</option>
+                            <option value="rejected" <?php echo $case_data['status'] == 'rejected' ? 'selected' : ''; ?>>Rejected</option>
+                        </select>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="notes" class="form-label">Add Note (Optional)</label>
+                        <textarea class="form-control" id="notes" name="notes" rows="3" placeholder="Add a note about this status change"></textarea>
+                    </div>
+                    
+                    <div class="form-check mb-3">
+                        <input class="form-check-input" type="checkbox" id="is_private_status" name="is_private">
+                        <label class="form-check-label" for="is_private_status">
+                            Make this note private (only visible to professionals)
+                        </label>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" name="update_status" class="btn btn-primary">Update Status</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<style>
+    .timeline {
+        position: relative;
+        padding: 1rem 0;
+    }
+    
+    .timeline-item {
+        position: relative;
+        padding-left: 1.5rem;
+        margin-bottom: 1.5rem;
+    }
+    
+    .timeline-item:before {
+        content: "";
+        position: absolute;
+        left: 0;
+        top: 0;
+        bottom: 0;
+        width: 2px;
+        background-color: #e9ecef;
+    }
+    
+    .timeline-item:after {
+        content: "";
+        position: absolute;
+        left: -6px;
+        top: 0;
+        width: 14px;
+        height: 14px;
+        border-radius: 50%;
+        background-color: #007bff;
+    }
+</style>
 
 <?php include '../includes/footer.php'; ?> 

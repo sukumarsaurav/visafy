@@ -121,6 +121,8 @@ $page_title = "Find a Consultant | Visafy";
 include('includes/header.php');
 ?>
 
+<link rel="stylesheet" href="assets/css/consultant.css">
+
 <section class="consultant-hero bg-light py-5">
     <div class="container">
         <h1 class="text-center mb-4">Find an Immigration Consultant</h1>

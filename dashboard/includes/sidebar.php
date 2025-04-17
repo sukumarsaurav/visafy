@@ -36,15 +36,21 @@ $user_type = $_SESSION['user_type'] ?? '';
                     </a>
                 </li>
                 <li class="nav-item">
+                    <a class="nav-link <?php echo $current_page === 'cases.php' || $current_page === 'case-details.php' ? 'active' : ''; ?>" href="cases.php">
+                        <i class="bi bi-folder"></i>
+                        Cases
+                    </a>
+                </li>
+                <li class="nav-item">
                     <a class="nav-link <?php echo $current_page === 'clients.php' ? 'active' : ''; ?>" href="clients.php">
                         <i class="bi bi-people"></i>
                         Clients
                     </a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link <?php echo $current_page === 'cases.php' ? 'active' : ''; ?>" href="cases.php">
-                        <i class="bi bi-folder"></i>
-                        Cases
+                    <a class="nav-link <?php echo $current_page === 'availability.php' ? 'active' : ''; ?>" href="availability.php">
+                        <i class="bi bi-calendar-check"></i>
+                        Availability
                     </a>
                 </li>
                 <li class="nav-item">
