@@ -16,7 +16,7 @@ if ($result && $result->num_rows > 0) {
         'username' => 'admin',
         'first_name' => 'Admin',
         'last_name' => 'User',
-        'email' => 'admin@canext.com',
+        'email' => 'admin@visafy.com',
         'phone' => '+1 (647) 123-4567',
         'role' => 'admin',
         'status' => 'active',

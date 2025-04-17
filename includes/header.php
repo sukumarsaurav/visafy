@@ -175,12 +175,10 @@ $base = isset($base_path) ? $base_path : $base_url;
                     <ul class="nav-menu">
                     <li class="nav-item"><a href="<?php echo $base; ?>/about-us.php">About Us</a></li>
                     <li class="nav-item"><a href="<?php echo $base; ?>/services.php">Services</a></li>
-                    <li class="nav-item"><a href="<?php echo $base; ?>/become-member.php">Become Member</a></li>
-                    <li class="nav-item"><a href="<?php echo $base; ?>/resources/immigration-news.php">News</a></li>
-                    <li class="nav-item"><a href="<?php echo $base; ?>/resources/blog.php">Blog</a></li>
-                       
+                    <li class="nav-item"><a href="<?php echo $base; ?>/become-member.php">Become Partner</a></li> 
+                    <li class="nav-item"><a href="<?php echo $base; ?>/become-member.php">Eligibility Check</a></li> 
                         
-                        <li class="nav-item"><a href="<?php echo $base; ?>/contact.php">Contact</a></li>
+                    
                     </ul>
                 </nav>
                 

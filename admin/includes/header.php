@@ -14,7 +14,7 @@ $current_page = basename($_SERVER['PHP_SELF']);
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Admin Dashboard | CANEXT Immigration</title>
+    <title>Admin Dashboard | Visafy Immigration</title>
     
     <!-- Google Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&family=Lora:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -30,7 +30,7 @@ $current_page = basename($_SERVER['PHP_SELF']);
         <!-- Sidebar -->
         <div class="admin-sidebar">
             <div class="admin-sidebar-header">
-                <h2>CANEXT Admin</h2>
+                <h2>Visafy Admin</h2>
                 <button id="sidebar-toggle" class="sidebar-toggle-btn">
                     <i class="fas fa-bars"></i>
                 </button>

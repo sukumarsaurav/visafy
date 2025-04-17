@@ -1,5 +1,5 @@
 <?php
-$page_title = "Express Entry | CANEXT Immigration";
+$page_title = "Express Entry | Visafy Immigration";
 include('../includes/header.php');
 ?>
 
@@ -41,7 +41,7 @@ include('../includes/header.php');
             
             <div class="col-sidebar" data-aos="fade-up" data-aos-delay="400" style="flex: 1; min-width: 30%;">
                 <div style="background-color: var(--color-cream); padding: 30px; border-radius: 10px; box-shadow: 0 5px 15px rgba(0,0,0,0.05);">
-                    <h3 style="color: var(--color-burgundy); margin-bottom: 20px;">Why Choose CANEXT?</h3>
+                    <h3 style="color: var(--color-burgundy); margin-bottom: 20px;">Why Choose Visafy?</h3>
                     <ul style="list-style: none; padding: 0;">
                         <li style="display: flex; align-items: flex-start; margin-bottom: 15px;">
                             <i class="fas fa-check-circle" style="color: var(--color-burgundy); margin-right: 10px; margin-top: 3px;"></i>
@@ -326,7 +326,7 @@ include('../includes/header.php');
                     </div>
                 </div>
                 <div class="story-content">
-                    <p>"As a software engineer from India, I was looking to advance my career in Canada. CANEXT helped me optimize my CRS score. My application was approved in just 5 months, and I now work for a tech company in Toronto."</p>
+                    <p>"As a software engineer from India, I was looking to advance my career in Canada. Visafy helped me optimize my CRS score. My application was approved in just 5 months, and I now work for a tech company in Toronto."</p>
                     <p style="margin-top: 15px;"><strong>CRS Score:</strong> 478 | <strong>Processing Time:</strong> 5 months</p>
                 </div>
             </div>
@@ -341,7 +341,7 @@ include('../includes/header.php');
                     </div>
                 </div>
                 <div class="story-content">
-                    <p>"After completing my master's degree in Canada, CANEXT helped me leverage my Canadian education and work experience for CEC. I received my permanent residence just 7 months after entering the Express Entry pool."</p>
+                    <p>"After completing my master's degree in Canada, Visafy helped me leverage my Canadian education and work experience for CEC. I received my permanent residence just 7 months after entering the Express Entry pool."</p>
                     <p style="margin-top: 15px;"><strong>CRS Score:</strong> 502 | <strong>Processing Time:</strong> 4 months</p>
                 </div>
             </div>
@@ -356,7 +356,7 @@ include('../includes/header.php');
                     </div>
                 </div>
                 <div class="story-content">
-                    <p>"As an electrician with 10 years of experience, CANEXT helped me get my qualifications assessed. I'm now working in Vancouver and have brought my family to Canada as well."</p>
+                    <p>"As an electrician with 10 years of experience, Visafy helped me get my qualifications assessed. I'm now working in Vancouver and have brought my family to Canada as well."</p>
                     <p style="margin-top: 15px;"><strong>CRS Score:</strong> 386 | <strong>Processing Time:</strong> 6 months</p>
                 </div>
             </div>

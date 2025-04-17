@@ -119,7 +119,7 @@ CREATE TABLE payment_records (
 
 -- Insert Sample Admin User
 INSERT INTO admin_users (username, password, first_name, last_name, email, role)
-VALUES ('admin', '$2y$10$qTSsA9kSXR4oMSP3InPKz.XcPArkpkY2VtXqjUm2wdWQGZT2Xd5Xy', 'Admin', 'User', 'admin@canext.com', 'admin');
+VALUES ('admin', '$2y$10$qTSsA9kSXR4oMSP3InPKz.XcPArkpkY2VtXqjUm2wdWQGZT2Xd5Xy', 'Admin', 'User', 'admin@visafy.com', 'admin');
 -- Password is "password123" hashed with bcrypt
 
 -- Insert Sample Appointments
@@ -142,8 +142,8 @@ VALUES
 
 -- Insert System Settings
 INSERT INTO system_settings (setting_key, setting_value, setting_group) VALUES
-('site_name', 'CANEXT Immigration Consultancy', 'general'),
-('site_email', 'info@canext.com', 'general'),
+('site_name', 'Visafy Immigration Consultancy', 'general'),
+('site_email', 'info@visafy.com', 'general'),
 ('site_phone', '+1 (647) 226-7436', 'general'),
 ('site_address', '2233 Argentina Rd, Mississauga ON L5N 2X7, Canada', 'general'),
 ('business_hours', 'Mon-Fri: 9am-5pm', 'general'),
@@ -211,7 +211,7 @@ CREATE TABLE IF NOT EXISTS `blog_posts` (
   `excerpt` text,
   `content` text NOT NULL,
   `featured_image` varchar(255) DEFAULT NULL,
-  `author` varchar(100) DEFAULT 'CANEXT Team',
+  `author` varchar(100) DEFAULT 'Visafy Team',
   `status` enum('draft','published') NOT NULL DEFAULT 'draft',
   `publish_date` datetime DEFAULT NULL,
   `created_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,

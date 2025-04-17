@@ -1,5 +1,5 @@
 <?php
-$page_title = "About Us | CANEXT Immigration";
+$page_title = "About Us | Visafy Immigration";
 include('includes/header.php');
 ?>
 
@@ -25,7 +25,7 @@ include('includes/header.php');
         <div class="about-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 50px; align-items: center;">
             <div class="about-content" data-aos="fade-right">
                 <h2 style="color: var(--color-burgundy); font-size: 2.5rem; margin-bottom: 20px;">Your Trusted Partner in Canadian Immigration</h2>
-                <p style="margin-bottom: 20px;">At CANEXT Immigration, we understand that immigrating to Canada is a life-changing decision. Our mission is to make this journey as smooth and successful as possible for our clients.</p>
+                <p style="margin-bottom: 20px;">At Visafy Immigration, we understand that immigrating to Canada is a life-changing decision. Our mission is to make this journey as smooth and successful as possible for our clients.</p>
                 <p style="margin-bottom: 20px;">With years of experience and a team of licensed professionals, we provide comprehensive immigration services tailored to your unique needs and circumstances.</p>
                 <div class="stats-grid" style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; margin-top: 30px;">
                     <div class="stat-item" style="text-align: center;">
@@ -43,7 +43,7 @@ include('includes/header.php');
                 </div>
             </div>
             <div class="about-image" data-aos="fade-left">
-                <img src="images/about-main.jpg" alt="CANEXT Immigration Team" style="width: 100%; border-radius: 10px; box-shadow: 0 5px 15px rgba(0,0,0,0.1);">
+                <img src="images/about-main.jpg" alt="Visafy Immigration Team" style="width: 100%; border-radius: 10px; box-shadow: 0 5px 15px rgba(0,0,0,0.1);">
             </div>
         </div>
     </div>

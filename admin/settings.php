@@ -21,12 +21,12 @@
             <form class="settings-form">
                 <div class="form-group">
                     <label for="site-name">Site Name</label>
-                    <input type="text" id="site-name" name="site_name" value="CANEXT Immigration Consultancy">
+                    <input type="text" id="site-name" name="site_name" value="Visafy Immigration Consultancy">
                 </div>
                 
                 <div class="form-group">
                     <label for="site-email">Contact Email</label>
-                    <input type="email" id="site-email" name="site_email" value="info@canext.com">
+                    <input type="email" id="site-email" name="site_email" value="info@visafy.com">
                 </div>
                 
                 <div class="form-group">

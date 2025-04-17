@@ -11,8 +11,8 @@ CREATE TABLE IF NOT EXISTS `site_settings` (
 
 -- Insert default values if not exists
 INSERT INTO `site_settings` (`setting_name`, `setting_value`) VALUES
-('site_name', 'CANEXT Immigration Consultancy'),
-('site_email', 'info@canext.com'),
+('site_name', 'Visafy Immigration Consultancy'),
+('site_email', 'info@visafy.com'),
 ('site_phone', '+1 (647) 226-7436'),
 ('site_address', '2233 Argentina Rd, Mississauga ON L5N 2X7, Canada'),
 ('business_hours', 'Mon-Fri: 9am-5pm'),

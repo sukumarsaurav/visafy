@@ -2,7 +2,7 @@
         <div class="container">
             <div class="footer-grid">
                 <div class="footer-col">
-                    <h3>CANEXT</h3>
+                    <h3>Visafy</h3>
                     <p>We specialize in providing expert immigration consultancy services for Canada, helping you achieve your dreams of studying, working, or settling in Canada.</p>
                     <div class="social-links">
                         <a href="#"><i class="fab fa-facebook-f"></i></a>
@@ -41,14 +41,14 @@
                     <ul class="footer-links">
                         <li><i class="fas fa-map-marker-alt"></i> 2233 Argentina Rd, Mississauga ON L5N 2X7, Canada</li>
                         <li><i class="fas fa-phone"></i> +1 (647) 226-7436</li>
-                        <li><i class="fas fa-envelope"></i> info@canext.com</li>
+                        <li><i class="fas fa-envelope"></i> info@visafy.com</li>
                         <li><i class="fas fa-clock"></i> Mon-Fri: 9am-5pm</li>
                     </ul>
                 </div>
             </div>
             
             <div class="footer-bottom">
-                <p>&copy; <span id="current-year"></span> CANEXT Immigration Consultancy. All Rights Reserved.</p>
+                <p>&copy; <span id="current-year"></span> Visafy Immigration Consultancy. All Rights Reserved.</p>
             </div>
         </div>
     </footer>

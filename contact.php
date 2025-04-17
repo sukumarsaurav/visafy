@@ -1,5 +1,5 @@
 <?php
-$page_title = "Contact Us | CANEXT Immigration";
+$page_title = "Contact Us | Visafy Immigration";
 include('includes/header.php');
 ?>
 
@@ -51,9 +51,9 @@ include('includes/header.php');
                     <i class="fas fa-envelope"></i>
                 </div>
                 <h3 style="color: var(--color-burgundy); margin-bottom: 15px;">Email</h3>
-                <p>General: info@canext.com</p>
-                <p>Support: support@canext.com</p>
-                <p>Careers: careers@canext.com</p>
+                <p>General: info@visafy.com</p>
+                <p>Support: support@visafy.com</p>
+                <p>Careers: careers@visafy.com</p>
             </div>
             
             <!-- Hours Card -->

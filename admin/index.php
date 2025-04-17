@@ -28,7 +28,7 @@ if($_SERVER['REQUEST_METHOD'] === 'POST') {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Admin Login | CANEXT Immigration</title>
+    <title>Admin Login | Visafy Immigration</title>
     
     <!-- Google Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&family=Lora:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -43,7 +43,7 @@ if($_SERVER['REQUEST_METHOD'] === 'POST') {
     <div class="admin-login-container">
         <div class="admin-login-box">
             <div class="admin-login-header">
-                <h1>CANEXT Admin</h1>
+                <h1>Visafy Admin</h1>
                 <p>Enter your credentials to access the admin panel</p>
             </div>
             
@@ -72,7 +72,7 @@ if($_SERVER['REQUEST_METHOD'] === 'POST') {
             </form>
             
             <div class="admin-login-footer">
-                <p>&copy; <?php echo date('Y'); ?> CANEXT Immigration Consultancy</p>
+                <p>&copy; <?php echo date('Y'); ?> Visafy Immigration Consultancy</p>
             </div>
         </div>
     </div>
