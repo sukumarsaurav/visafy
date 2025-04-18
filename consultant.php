@@ -4,10 +4,6 @@ require_once 'config/database.php';
 
 // Get search parameters
 $search = isset($_GET['search']) ? trim($_GET['search']) : '';
-$specialty = isset($_GET['specialty']) ? trim($_GET['specialty']) : '';
-$language = isset($_GET['language']) ? trim($_GET['language']) : '';
-$min_price = isset($_GET['min_price']) && is_numeric($_GET['min_price']) ? (float)$_GET['min_price'] : null;
-$max_price = isset($_GET['max_price']) && is_numeric($_GET['max_price']) ? (float)$_GET['max_price'] : null;
 
 // Base query to get professionals
 $query = "SELECT p.*, u.name, u.email 
@@ -26,37 +22,6 @@ if (!empty($search)) {
     $search_param = "%$search%";
     array_push($params, $search_param, $search_param, $search_param);
     $types .= "sss";
-}
-
-if (!empty($specialty)) {
-    $query .= " AND p.specializations LIKE ?";
-    array_push($params, "%$specialty%");
-    $types .= "s";
-}
-
-if (!empty($language)) {
-    $query .= " AND p.languages LIKE ?";
-    array_push($params, "%$language%");
-    $types .= "s";
-}
-
-// Add price filtering from consultation_fees
-if ($min_price !== null || $max_price !== null) {
-    $query .= " AND EXISTS (SELECT 1 FROM consultation_fees cf WHERE cf.professional_id = p.user_id";
-    
-    if ($min_price !== null) {
-        $query .= " AND cf.fee >= ?";
-        array_push($params, $min_price);
-        $types .= "d";
-    }
-    
-    if ($max_price !== null) {
-        $query .= " AND cf.fee <= ?";
-        array_push($params, $max_price);
-        $types .= "d";
-    }
-    
-    $query .= ")";
 }
 
 $query .= " ORDER BY p.is_featured DESC, p.rating DESC";
@@ -79,33 +44,6 @@ if ($result && $result->num_rows > 0) {
     }
 }
 
-// Extract unique specialties and languages for filter options
-$specialties = [];
-$languages = [];
-
-foreach ($consultants as $consultant) {
-    $consultant_specialties = explode(',', $consultant['specializations']);
-    $consultant_languages = explode(',', $consultant['languages']);
-    
-    foreach ($consultant_specialties as $spec) {
-        $spec = trim($spec);
-        if (!empty($spec) && !in_array($spec, $specialties)) {
-            $specialties[] = $spec;
-        }
-    }
-    
-    foreach ($consultant_languages as $lang) {
-        $lang = trim($lang);
-        if (!empty($lang) && !in_array($lang, $languages)) {
-            $languages[] = $lang;
-        }
-    }
-}
-
-// Sort filter options alphabetically
-sort($specialties);
-sort($languages);
-
 // Get consultation fees for each professional
 $consultation_fees = [];
 $fee_query = "SELECT professional_id, consultation_type, fee FROM consultation_fees";
@@ -123,198 +61,162 @@ include('includes/header.php');
 
 <link rel="stylesheet" href="assets/css/consultant.css">
 
-<section class="consultant-hero">
+<!-- Page Header -->
+<section class="page-header" style="background-color: var(--color-burgundy); padding: 100px 0; color: var(--color-light); text-align: center;">
+    <div style="position: absolute; width: 300px; height: 300px; border-radius: 50%; background-color: rgba(255, 255, 255, 0.1); top: -100px; left: -100px;"></div>
+    <div style="position: absolute; width: 200px; height: 200px; border-radius: 50%; background-color: rgba(255, 255, 255, 0.1); bottom: -50px; right: 10%; animation: pulse 4s infinite alternate;"></div>
+    <div style="position: absolute; width: 100px; height: 100px; border-radius: 50%; background-color: rgba(255, 255, 255, 0.1); top: 30%; right: 20%; animation: pulse 3s infinite alternate;"></div>
     <div class="container">
-        <h1 class="text-center">Find an Immigration Consultant</h1>
-        <p class="text-center lead mb-5">Connect with experienced and verified immigration consultants who can help you with your immigration journey.</p>
+        <h1 data-aos="fade-up">Find an Immigration Consultant</h1>
+        <p class="lead" data-aos="fade-up" data-aos-delay="100">Connect with experienced and verified immigration professionals who can help you with your immigration journey.</p>
         
         <!-- Modern Search Bar -->
-        <div class="search-container">
+        <div class="search-container" data-aos="fade-up" data-aos-delay="200" style="max-width: 700px; margin: 2rem auto 0;">
             <form action="" method="GET">
                 <input type="text" name="search" placeholder="Search for consultants by name, specialty, or description..." value="<?php echo htmlspecialchars($search); ?>">
-                <button type="submit"><i class="fas fa-search"></i> Search</button>
+                <button type="submit"><i class="fas fa-search"></i></button>
             </form>
         </div>
         
-        <!-- Advanced Filters (Hidden by Default) -->
-        <div class="filters-section" id="advancedFilters" style="<?php echo (!empty($specialty) || !empty($language) || $min_price !== null || $max_price !== null) ? 'display:block' : 'display:none'; ?>">
-            <form action="" method="GET" class="filter-form">
-                <input type="hidden" name="search" value="<?php echo htmlspecialchars($search); ?>">
-                
-                <div class="form-group">
-                    <label for="specialty">Specialty</label>
-                    <select class="form-control" id="specialty" name="specialty">
-                        <option value="">All Specialties</option>
-                        <?php foreach ($specialties as $spec): ?>
-                            <option value="<?php echo htmlspecialchars($spec); ?>" <?php echo $specialty === $spec ? 'selected' : ''; ?>>
-                                <?php echo htmlspecialchars($spec); ?>
-                            </option>
-                        <?php endforeach; ?>
-                    </select>
-                </div>
-                
-                <div class="form-group">
-                    <label for="language">Language</label>
-                    <select class="form-control" id="language" name="language">
-                        <option value="">All Languages</option>
-                        <?php foreach ($languages as $lang): ?>
-                            <option value="<?php echo htmlspecialchars($lang); ?>" <?php echo $language === $lang ? 'selected' : ''; ?>>
-                                <?php echo htmlspecialchars($lang); ?>
-                            </option>
-                        <?php endforeach; ?>
-                    </select>
-                </div>
-                
-                <div class="form-group">
-                    <label for="min_price">Min. Price (C$)</label>
-                    <input type="number" class="form-control" id="min_price" name="min_price" value="<?php echo htmlspecialchars($min_price ?? ''); ?>" placeholder="Min price">
-                </div>
-                
-                <div class="form-group">
-                    <label for="max_price">Max. Price (C$)</label>
-                    <input type="number" class="form-control" id="max_price" name="max_price" value="<?php echo htmlspecialchars($max_price ?? ''); ?>" placeholder="Max price">
-                </div>
-                
-                <div class="filter-buttons">
-                    <button type="submit" class="btn btn-primary">Apply Filters</button>
-                    <a href="consultant.php" class="btn btn-outline-secondary">Reset</a>
-                </div>
-            </form>
-        </div>
-        
-        <div class="text-center mb-4">
-            <button id="toggleFilters" class="btn btn-sm btn-outline-secondary">
-                <span id="filterButtonText"><?php echo (!empty($specialty) || !empty($language) || $min_price !== null || $max_price !== null) ? 'Hide Advanced Filters' : 'Show Advanced Filters'; ?></span>
-            </button>
-        </div>
-        
+        <nav aria-label="breadcrumb" data-aos="fade-up" data-aos-delay="150">
+            <ol class="breadcrumb" style="display: flex; justify-content: center; list-style: none; padding: 0; margin: 20px 0 0 0;">
+          
+            </ol>
+        </nav>
+    </div>
+</section>
+
+<section class="section" style="background-color: var(--color-cream); padding: 50px 0;">
+    <div class="container">
         <!-- Results Section -->
         <?php if (empty($consultants)): ?>
-            <div class="no-results">
-                <h4>No consultants found</h4>
-                <p>Sorry, we couldn't find any consultants matching your criteria. Try adjusting your filters or search terms.</p>
+            <div class="no-results" style="text-align: center; padding: 50px; background-color: white; border-radius: 10px; box-shadow: 0 5px 15px rgba(0,0,0,0.05);" data-aos="fade-up">
+                <div style="font-size: 4rem; color: var(--color-secondary); margin-bottom: 20px;">
+                    <i class="fas fa-search"></i>
+                </div>
+                <h3 style="color: var(--color-primary); margin-bottom: 15px;">No consultants found</h3>
+                <p style="color: var(--color-gray); max-width: 500px; margin: 0 auto;">Sorry, we couldn't find any consultants matching your criteria. Try adjusting your search term.</p>
             </div>
         <?php else: ?>
-            <div class="consultant-grid">
+            <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(500px, 1fr)); gap: 30px;">
                 <?php foreach ($consultants as $consultant): ?>
-                    <div class="consultant-card <?php echo $consultant['is_featured'] ? 'featured' : ''; ?>">
-                        <?php if ($consultant['is_featured']): ?>
-                            <div class="featured-badge">Featured</div>
-                        <?php endif; ?>
-                        
-                        <div class="consultant-header">
-                            <img src="<?php echo !empty($consultant['profile_image']) ? htmlspecialchars($consultant['profile_image']) : 'assets/images/logo-Visafy-light.png'; ?>" 
-                                 alt="<?php echo htmlspecialchars($consultant['name']); ?>" 
-                                 class="consultant-image">
-                                 
-                            <div class="consultant-info">
-                                <h3 class="consultant-name"><?php echo htmlspecialchars($consultant['name']); ?></h3>
-                                <div class="consultant-license"><?php echo htmlspecialchars($consultant['license_number']); ?></div>
-                                
-                                <div class="consultant-badges">
-                                    <span class="experience-badge">
-                                        <i class="fas fa-briefcase"></i> <?php echo htmlspecialchars($consultant['years_experience']); ?> years
-                                    </span>
+                    <a href="consultant-profile.php?id=<?php echo $consultant['id']; ?>" style="text-decoration: none; color: inherit;">
+                        <div class="consultant-card" style="display: flex; background: white; border-radius: 10px; overflow: hidden; box-shadow: 0 5px 15px rgba(0,0,0,0.05); transition: all 0.3s ease; height: 100%; cursor: pointer; border-left: <?php echo $consultant['is_featured'] ? '4px solid var(--color-secondary)' : 'none'; ?>;" data-aos="fade-up">
+                            <?php if ($consultant['is_featured']): ?>
+                                <div style="position: absolute; top: 15px; right: 15px; background-color: var(--color-secondary); color: white; padding: 5px 10px; font-size: 0.75rem; border-radius: 20px; font-weight: 600; z-index: 1;">Featured</div>
+                            <?php endif; ?>
+                            
+                            <div style="padding: 30px; display: flex; width: 100%; flex-direction: column;">
+                                <div style="display: flex; margin-bottom: 20px;">
+                                    <div style="flex: 0 0 100px;">
+                                        <img src="<?php echo !empty($consultant['profile_image']) ? htmlspecialchars($consultant['profile_image']) : 'assets/images/logo-Visafy-light.png'; ?>" 
+                                             alt="<?php echo htmlspecialchars($consultant['name']); ?>" 
+                                             style="width: 100px; height: 100px; border-radius: 50%; object-fit: cover; box-shadow: 0 5px 15px rgba(0,0,0,0.1);">
+                                    </div>
                                     
-                                    <?php if ($consultant['rating']): ?>
-                                        <span class="rating-badge">
-                                            <i class="fas fa-star"></i> <?php echo number_format($consultant['rating'], 1); ?>
-                                            (<?php echo $consultant['reviews_count']; ?>)
-                                        </span>
-                                    <?php endif; ?>
+                                    <div style="flex: 1; padding-left: 25px;">
+                                        <h3 style="color: var(--color-primary); font-size: 1.4rem; margin-bottom: 5px;"><?php echo htmlspecialchars($consultant['name']); ?></h3>
+                                        <div style="color: var(--color-gray); font-size: 0.9rem; margin-bottom: 10px;"><?php echo htmlspecialchars($consultant['license_number']); ?></div>
+                                        
+                                        <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+                                            <span style="background-color: rgba(4, 33, 103, 0.1); color: var(--color-primary); padding: 5px 10px; border-radius: 20px; font-size: 0.8rem; display: inline-flex; align-items: center;">
+                                                <i class="fas fa-briefcase" style="margin-right: 5px;"></i> <?php echo htmlspecialchars($consultant['years_experience']); ?> years
+                                            </span>
+                                            
+                                            <?php if ($consultant['rating']): ?>
+                                                <span style="background-color: rgba(234, 170, 52, 0.1); color: var(--color-secondary); padding: 5px 10px; border-radius: 20px; font-size: 0.8rem; display: inline-flex; align-items: center;">
+                                                    <i class="fas fa-star" style="margin-right: 5px;"></i> <?php echo number_format($consultant['rating'], 1); ?>
+                                                    (<?php echo $consultant['reviews_count']; ?>)
+                                                </span>
+                                            <?php endif; ?>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div style="margin-bottom: 15px;">
+                                    <div style="font-weight: 600; font-size: 0.85rem; margin-bottom: 5px; color: var(--color-dark); display: flex; align-items: center;">
+                                        <i class="fas fa-clipboard-list" style="margin-right: 8px; color: var(--color-primary);"></i> Specialties
+                                    </div>
+                                    <div style="display: flex; flex-wrap: wrap; gap: 5px;">
+                                        <?php 
+                                        $specs = explode(',', $consultant['specializations']); 
+                                        foreach ($specs as $spec): 
+                                            $spec = trim($spec);
+                                            if (!empty($spec)):
+                                        ?>
+                                            <span style="background-color: rgba(4, 33, 103, 0.08); color: var(--color-primary); padding: 4px 12px; border-radius: 20px; font-size: 0.8rem;"><?php echo htmlspecialchars($spec); ?></span>
+                                        <?php 
+                                            endif;
+                                        endforeach; 
+                                        ?>
+                                    </div>
+                                </div>
+                                
+                                <div style="margin-bottom: 15px;">
+                                    <div style="font-weight: 600; font-size: 0.85rem; margin-bottom: 5px; color: var(--color-dark); display: flex; align-items: center;">
+                                        <i class="fas fa-globe" style="margin-right: 8px; color: var(--color-secondary);"></i> Languages
+                                    </div>
+                                    <div style="display: flex; flex-wrap: wrap; gap: 5px;">
+                                        <?php 
+                                        $langs = explode(',', $consultant['languages']); 
+                                        foreach ($langs as $lang): 
+                                            $lang = trim($lang);
+                                            if (!empty($lang)):
+                                        ?>
+                                            <span style="background-color: rgba(234, 170, 52, 0.08); color: var(--color-secondary); padding: 4px 12px; border-radius: 20px; font-size: 0.8rem;"><?php echo htmlspecialchars($lang); ?></span>
+                                        <?php 
+                                            endif;
+                                        endforeach; 
+                                        ?>
+                                    </div>
+                                </div>
+                                
+                                <div>
+                                    <div style="font-weight: 600; font-size: 0.85rem; margin-bottom: 5px; color: var(--color-dark); display: flex; align-items: center;">
+                                        <i class="fas fa-comments" style="margin-right: 8px; color: var(--color-primary);"></i> Consultation Options
+                                    </div>
+                                    <div style="display: flex; flex-wrap: wrap; gap: 10px;">
+                                        <?php if (isset($consultation_fees[$consultant['user_id']])): ?>
+                                            <?php if (isset($consultation_fees[$consultant['user_id']]['video'])): ?>
+                                                <span style="background-color: rgba(4, 33, 103, 0.08); color: var(--color-primary); width: 35px; height: 35px; border-radius: 50%; display: flex; align-items: center; justify-content: center;" title="Video">
+                                                    <i class="fas fa-video"></i>
+                                                </span>
+                                            <?php endif; ?>
+                                            
+                                            <?php if (isset($consultation_fees[$consultant['user_id']]['phone'])): ?>
+                                                <span style="background-color: rgba(4, 33, 103, 0.08); color: var(--color-primary); width: 35px; height: 35px; border-radius: 50%; display: flex; align-items: center; justify-content: center;" title="Phone">
+                                                    <i class="fas fa-phone"></i>
+                                                </span>
+                                            <?php endif; ?>
+                                            
+                                            <?php if (isset($consultation_fees[$consultant['user_id']]['inperson'])): ?>
+                                                <span style="background-color: rgba(4, 33, 103, 0.08); color: var(--color-primary); width: 35px; height: 35px; border-radius: 50%; display: flex; align-items: center; justify-content: center;" title="In-person">
+                                                    <i class="fas fa-user"></i>
+                                                </span>
+                                            <?php endif; ?>
+                                        <?php else: ?>
+                                            <span style="background-color: rgba(4, 33, 103, 0.08); color: var(--color-primary); padding: 4px 12px; border-radius: 20px; font-size: 0.8rem; display: inline-flex; align-items: center;">
+                                                <i class="fas fa-info-circle" style="margin-right: 5px;"></i> Contact for options
+                                            </span>
+                                        <?php endif; ?>
+                                    </div>
                                 </div>
                             </div>
                         </div>
-                        
-                        <div class="consultant-body">
-                            <div class="section-title">Specialties</div>
-                            <div class="specialty-tabs">
-                                <?php 
-                                $specs = explode(',', $consultant['specializations']); 
-                                foreach ($specs as $spec): 
-                                    $spec = trim($spec);
-                                    if (!empty($spec)):
-                                ?>
-                                    <span class="specialty-tag"><?php echo htmlspecialchars($spec); ?></span>
-                                <?php 
-                                    endif;
-                                endforeach; 
-                                ?>
-                            </div>
-                            
-                            <div class="section-title">Languages</div>
-                            <div class="language-tabs">
-                                <?php 
-                                $langs = explode(',', $consultant['languages']); 
-                                foreach ($langs as $lang): 
-                                    $lang = trim($lang);
-                                    if (!empty($lang)):
-                                ?>
-                                    <span class="language-tag"><?php echo htmlspecialchars($lang); ?></span>
-                                <?php 
-                                    endif;
-                                endforeach; 
-                                ?>
-                            </div>
-                            
-                            <div class="section-title">Consultation Options</div>
-                            <div class="consultation-modes">
-                                <?php if (isset($consultation_fees[$consultant['user_id']])): ?>
-                                    <?php if (isset($consultation_fees[$consultant['user_id']]['video'])): ?>
-                                        <div class="mode-item">
-                                            <div class="mode-icon"><i class="fas fa-video"></i></div>
-                                            <span>Video: C$<?php echo number_format($consultation_fees[$consultant['user_id']]['video'], 2); ?></span>
-                                        </div>
-                                    <?php endif; ?>
-                                    
-                                    <?php if (isset($consultation_fees[$consultant['user_id']]['phone'])): ?>
-                                        <div class="mode-item">
-                                            <div class="mode-icon"><i class="fas fa-phone"></i></div>
-                                            <span>Phone: C$<?php echo number_format($consultation_fees[$consultant['user_id']]['phone'], 2); ?></span>
-                                        </div>
-                                    <?php endif; ?>
-                                    
-                                    <?php if (isset($consultation_fees[$consultant['user_id']]['inperson'])): ?>
-                                        <div class="mode-item">
-                                            <div class="mode-icon"><i class="fas fa-user"></i></div>
-                                            <span>In-person: C$<?php echo number_format($consultation_fees[$consultant['user_id']]['inperson'], 2); ?></span>
-                                        </div>
-                                    <?php endif; ?>
-                                <?php else: ?>
-                                    <div class="mode-item">
-                                        <div class="mode-icon"><i class="fas fa-info-circle"></i></div>
-                                        <span>Contact for pricing</span>
-                                    </div>
-                                <?php endif; ?>
-                            </div>
-                        </div>
-                        
-                        <div class="consultant-footer">
-                            <a href="consultant-profile.php?id=<?php echo $consultant['id']; ?>" class="view-profile-btn">View Profile</a>
-                        </div>
-                    </div>
+                    </a>
                 <?php endforeach; ?>
             </div>
         <?php endif; ?>
     </div>
 </section>
 
-<!-- JavaScript for filter toggle -->
 <script>
 document.addEventListener('DOMContentLoaded', function() {
-    const toggleButton = document.getElementById('toggleFilters');
-    const filtersSection = document.getElementById('advancedFilters');
-    const filterButtonText = document.getElementById('filterButtonText');
-    
-    if (toggleButton && filtersSection && filterButtonText) {
-        toggleButton.addEventListener('click', function() {
-            if (filtersSection.style.display === 'none') {
-                filtersSection.style.display = 'block';
-                filterButtonText.textContent = 'Hide Advanced Filters';
-            } else {
-                filtersSection.style.display = 'none';
-                filterButtonText.textContent = 'Show Advanced Filters';
-            }
+    // Initialize AOS
+    if (typeof AOS !== 'undefined') {
+        AOS.init({
+            duration: 800,
+            once: true
         });
     }
 });

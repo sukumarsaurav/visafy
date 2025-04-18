@@ -14,9 +14,9 @@ if ($consultant_id <= 0) {
 }
 
 // Fetch consultant details
-$stmt = $conn->prepare("SELECT p.*, u.email, u.profile_image FROM professionals p 
+$stmt = $conn->prepare("SELECT p.*, u.email FROM professionals p 
                         JOIN users u ON p.user_id = u.id
-                        WHERE p.id = ? AND p.is_active = 1 AND p.is_verified = 1");
+                        WHERE p.id = ? AND p.is_verified = 1");
 $stmt->bind_param("i", $consultant_id);
 $stmt->execute();
 $result = $stmt->get_result();
@@ -29,31 +29,15 @@ if ($result->num_rows == 0) {
 
 $consultant = $result->fetch_assoc();
 
-// Fetch specialties
-$stmt = $conn->prepare("SELECT specialty FROM professional_specialties WHERE professional_id = ?");
-$stmt->bind_param("i", $consultant_id);
-$stmt->execute();
-$specialtyResult = $stmt->get_result();
-$specialties = [];
-while ($row = $specialtyResult->fetch_assoc()) {
-    $specialties[] = $row['specialty'];
-}
-
-// Fetch languages
-$stmt = $conn->prepare("SELECT language FROM professional_languages WHERE professional_id = ?");
-$stmt->bind_param("i", $consultant_id);
-$stmt->execute();
-$languageResult = $stmt->get_result();
-$languages = [];
-while ($row = $languageResult->fetch_assoc()) {
-    $languages[] = $row['language'];
-}
+// Get specializations and languages from the comma-separated values in the database
+$specializations = !empty($consultant['specializations']) ? explode(',', $consultant['specializations']) : [];
+$languages = !empty($consultant['languages']) ? explode(',', $consultant['languages']) : [];
 
 // Fetch reviews
-$stmt = $conn->prepare("SELECT r.*, u.first_name, u.last_name FROM reviews r
+$stmt = $conn->prepare("SELECT r.*, u.name FROM reviews r
                         JOIN users u ON r.user_id = u.id
                         WHERE r.professional_id = ? ORDER BY r.created_at DESC");
-$stmt->bind_param("i", $consultant_id);
+$stmt->bind_param("i", $consultant['user_id']);
 $stmt->execute();
 $reviewsResult = $stmt->get_result();
 $reviews = [];
@@ -68,8 +52,19 @@ while ($row = $reviewsResult->fetch_assoc()) {
 
 $avgRating = $reviewCount > 0 ? round($totalRating / $reviewCount, 1) : 0;
 
+// Get consultation fees
+$stmt = $conn->prepare("SELECT consultation_type, fee FROM consultation_fees WHERE professional_id = ?");
+$stmt->bind_param("i", $consultant['user_id']);
+$stmt->execute();
+$feesResult = $stmt->get_result();
+$consultationFees = [];
+
+while ($row = $feesResult->fetch_assoc()) {
+    $consultationFees[$row['consultation_type']] = $row['fee'];
+}
+
 // Format profile image path
-$profileImage = !empty($consultant['profile_image']) ? $base . '/uploads/profile/' . $consultant['profile_image'] : $base . '/assets/images/default-avatar.png';
+$profileImage = !empty($consultant['profile_image']) ? $base . '/' . $consultant['profile_image'] : $base . '/assets/images/logo-Visafy-light.png';
 
 // Handle booking form submission
 $bookingSuccess = false;
@@ -81,22 +76,45 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['book_consultation']))
         $bookingError = 'Please login to book a consultation.';
     } else {
         $userId = $_SESSION['user_id'];
+        $professionalId = $consultant['user_id']; // Use the professional's user_id
         $date = $_POST['consultation_date'];
         $time = $_POST['consultation_time'];
         $message = $conn->real_escape_string($_POST['consultation_message']);
         $type = $conn->real_escape_string($_POST['consultation_type']);
         
-        $datetime = $date . ' ' . $time . ':00';
+        // Get fee for selected consultation type
+        $consultationFee = isset($consultationFees[$type]) ? $consultationFees[$type] : 0;
         
-        // Insert booking
-        $stmt = $conn->prepare("INSERT INTO bookings (user_id, professional_id, booking_datetime, message, consultation_type, status, created_at) 
-                                VALUES (?, ?, ?, ?, ?, 'pending', NOW())");
-        $stmt->bind_param("iisss", $userId, $consultant_id, $datetime, $message, $type);
+        // Create a time slot entry first
+        $stmt = $conn->prepare("INSERT INTO time_slots (professional_id, date, start_time, end_time, is_video_available, is_phone_available, is_inperson_available, is_booked) 
+                                VALUES (?, ?, ?, ?, ?, ?, ?, 1)");
+        
+        // Calculate end time (assume 30 minute slots)
+        $startTime = $time . ":00";
+        $endTime = date('H:i:s', strtotime($startTime . ' + 30 minutes'));
+        
+        // Set availability flags based on consultation type
+        $isVideoAvailable = ($type == 'video') ? 1 : 0;
+        $isPhoneAvailable = ($type == 'phone') ? 1 : 0;
+        $isInPersonAvailable = ($type == 'inperson') ? 1 : 0;
+        
+        $stmt->bind_param("isssiiii", $professionalId, $date, $startTime, $endTime, $isVideoAvailable, $isPhoneAvailable, $isInPersonAvailable);
         
         if ($stmt->execute()) {
-            $bookingSuccess = true;
+            $timeSlotId = $conn->insert_id;
+            
+            // Now insert the booking
+            $stmt = $conn->prepare("INSERT INTO bookings (professional_id, client_id, time_slot_id, consultation_type, status, price, created_at) 
+                                    VALUES (?, ?, ?, ?, 'pending', ?, NOW())");
+            $stmt->bind_param("iiisd", $professionalId, $userId, $timeSlotId, $type, $consultationFee);
+            
+            if ($stmt->execute()) {
+                $bookingSuccess = true;
+            } else {
+                $bookingError = 'Failed to book consultation. Please try again.';
+            }
         } else {
-            $bookingError = 'Failed to book consultation. Please try again.';
+            $bookingError = 'Failed to create time slot. Please try again.';
         }
     }
 }
@@ -110,10 +128,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['book_consultation']))
                 <div class="card-body">
                     <div class="d-flex flex-column flex-md-row">
                         <div class="consultant-profile-photo">
-                            <img src="<?php echo $profileImage; ?>" alt="<?php echo htmlspecialchars($consultant['first_name'] . ' ' . $consultant['last_name']); ?>" class="img-fluid rounded-circle">
+                            <img src="<?php echo $profileImage; ?>" alt="<?php echo htmlspecialchars($consultant['name']); ?>" class="img-fluid rounded-circle">
                         </div>
                         <div class="consultant-profile-info ms-md-4 mt-3 mt-md-0">
-                            <h1><?php echo htmlspecialchars($consultant['first_name'] . ' ' . $consultant['last_name']); ?></h1>
+                            <h1><?php echo htmlspecialchars($consultant['name']); ?></h1>
                             
                             <div class="d-flex align-items-center mb-2">
                                 <div class="me-3">
@@ -122,29 +140,43 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['book_consultation']))
                                 </div>
                                 <div>
                                     <i class="fas fa-briefcase"></i>
-                                    <span><?php echo htmlspecialchars($consultant['experience']); ?> years experience</span>
+                                    <span><?php echo htmlspecialchars($consultant['years_experience']); ?> years experience</span>
                                 </div>
                             </div>
                             
                             <div class="mb-3">
-                                <strong>Consultation Fee:</strong> $<?php echo number_format($consultant['consultation_fee'], 2); ?> per hour
+                                <strong>License Number:</strong> <?php echo htmlspecialchars($consultant['license_number']); ?>
                             </div>
                             
                             <div class="mb-3">
                                 <h5>Specialties</h5>
                                 <div class="specialty-badges">
-                                    <?php foreach ($specialties as $specialty): ?>
-                                        <span class="badge bg-primary me-1 mb-1"><?php echo htmlspecialchars($specialty); ?></span>
-                                    <?php endforeach; ?>
+                                    <?php 
+                                    foreach ($specializations as $spec): 
+                                        $spec = trim($spec);
+                                        if (!empty($spec)):
+                                    ?>
+                                        <span class="badge bg-primary me-1 mb-1"><?php echo htmlspecialchars($spec); ?></span>
+                                    <?php 
+                                        endif;
+                                    endforeach; 
+                                    ?>
                                 </div>
                             </div>
                             
                             <div class="mb-3">
                                 <h5>Languages</h5>
                                 <div class="language-badges">
-                                    <?php foreach ($languages as $language): ?>
-                                        <span class="badge bg-secondary me-1 mb-1"><?php echo htmlspecialchars($language); ?></span>
-                                    <?php endforeach; ?>
+                                    <?php 
+                                    foreach ($languages as $lang): 
+                                        $lang = trim($lang);
+                                        if (!empty($lang)):
+                                    ?>
+                                        <span class="badge bg-secondary me-1 mb-1"><?php echo htmlspecialchars($lang); ?></span>
+                                    <?php 
+                                        endif;
+                                    endforeach; 
+                                    ?>
                                 </div>
                             </div>
                         </div>
@@ -173,7 +205,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['book_consultation']))
                             <div class="review-item mb-3 pb-3 border-bottom">
                                 <div class="d-flex justify-content-between align-items-center mb-2">
                                     <div>
-                                        <strong><?php echo htmlspecialchars($review['first_name'] . ' ' . $review['last_name']); ?></strong>
+                                        <strong><?php echo htmlspecialchars($review['name']); ?></strong>
                                         <span class="text-muted ms-2">
                                             <?php echo date('M d, Y', strtotime($review['created_at'])); ?>
                                         </span>
@@ -214,9 +246,21 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['book_consultation']))
                                 <label for="consultation_type" class="form-label">Consultation Type</label>
                                 <select class="form-select" id="consultation_type" name="consultation_type" required>
                                     <option value="">Select Type</option>
-                                    <option value="video">Video Call</option>
-                                    <option value="phone">Phone Call</option>
-                                    <option value="in_person">In Person</option>
+                                    <?php if (!empty($consultationFees)): ?>
+                                        <?php if (isset($consultationFees['video'])): ?>
+                                            <option value="video">Video Call - $<?php echo number_format($consultationFees['video'], 2); ?></option>
+                                        <?php endif; ?>
+                                        <?php if (isset($consultationFees['phone'])): ?>
+                                            <option value="phone">Phone Call - $<?php echo number_format($consultationFees['phone'], 2); ?></option>
+                                        <?php endif; ?>
+                                        <?php if (isset($consultationFees['inperson'])): ?>
+                                            <option value="inperson">In Person - $<?php echo number_format($consultationFees['inperson'], 2); ?></option>
+                                        <?php endif; ?>
+                                    <?php else: ?>
+                                        <option value="video">Video Call</option>
+                                        <option value="phone">Phone Call</option>
+                                        <option value="inperson">In Person</option>
+                                    <?php endif; ?>
                                 </select>
                             </div>
                             
@@ -257,7 +301,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['book_consultation']))
                             </div>
                             
                             <div class="mt-3 booking-fee-info">
-                                <p class="mb-0"><i class="fas fa-info-circle"></i> Consultation Fee: $<?php echo number_format($consultant['consultation_fee'], 2); ?> per hour</p>
+                                <?php if (!empty($consultationFees)): ?>
+                                <p class="mb-0"><i class="fas fa-info-circle"></i> Consultation Fees:</p>
+                                <ul class="list-unstyled ps-3 mb-1">
+                                    <?php foreach ($consultationFees as $type => $fee): ?>
+                                    <li><?php echo ucfirst($type); ?>: $<?php echo number_format($fee, 2); ?></li>
+                                    <?php endforeach; ?>
+                                </ul>
+                                <?php else: ?>
+                                <p class="mb-0"><i class="fas fa-info-circle"></i> Contact for pricing details</p>
+                                <?php endif; ?>
                                 <small class="text-muted">You will receive payment instructions after the consultant confirms your booking.</small>
                             </div>
                         </form>
