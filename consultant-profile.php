@@ -14,7 +14,7 @@ if ($consultant_id <= 0) {
 }
 
 // Fetch consultant details
-$stmt = $conn->prepare("SELECT p.*, u.email FROM professionals p 
+$stmt = $conn->prepare("SELECT p.*, u.email, u.name FROM professionals p 
                         JOIN users u ON p.user_id = u.id
                         WHERE p.id = ? AND p.is_verified = 1");
 $stmt->bind_param("i", $consultant_id);
@@ -65,6 +65,9 @@ while ($row = $feesResult->fetch_assoc()) {
 
 // Format profile image path
 $profileImage = !empty($consultant['profile_image']) ? $base . '/' . $consultant['profile_image'] : $base . '/assets/images/logo-Visafy-light.png';
+
+// Make sure consultant name is never null
+$consultantName = !empty($consultant['name']) ? $consultant['name'] : 'Consultant';
 
 // Handle booking form submission
 $bookingSuccess = false;
@@ -128,10 +131,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['book_consultation']))
                 <div class="card-body">
                     <div class="d-flex flex-column flex-md-row">
                         <div class="consultant-profile-photo">
-                            <img src="<?php echo $profileImage; ?>" alt="<?php echo htmlspecialchars($consultant['name']); ?>" class="img-fluid rounded-circle">
+                            <img src="<?php echo $profileImage; ?>" alt="<?php echo htmlspecialchars($consultantName); ?>" class="img-fluid rounded-circle">
                         </div>
                         <div class="consultant-profile-info ms-md-4 mt-3 mt-md-0">
-                            <h1><?php echo htmlspecialchars($consultant['name']); ?></h1>
+                            <h1><?php echo htmlspecialchars($consultantName); ?></h1>
                             
                             <div class="d-flex align-items-center mb-2">
                                 <div class="me-3">
@@ -205,7 +208,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['book_consultation']))
                             <div class="review-item mb-3 pb-3 border-bottom">
                                 <div class="d-flex justify-content-between align-items-center mb-2">
                                     <div>
-                                        <strong><?php echo htmlspecialchars($review['name']); ?></strong>
+                                        <strong><?php echo htmlspecialchars(!empty($review['name']) ? $review['name'] : 'Anonymous'); ?></strong>
                                         <span class="text-muted ms-2">
                                             <?php echo date('M d, Y', strtotime($review['created_at'])); ?>
                                         </span>
@@ -216,7 +219,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['book_consultation']))
                                         <?php endfor; ?>
                                     </div>
                                 </div>
-                                <p><?php echo nl2br(htmlspecialchars($review['comment'])); ?></p>
+                                <p><?php echo nl2br(htmlspecialchars(!empty($review['comment']) ? $review['comment'] : '')); ?></p>
                             </div>
                         <?php endforeach; ?>
                     <?php endif; ?>
