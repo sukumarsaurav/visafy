@@ -4,6 +4,7 @@ require_once 'config/database.php';
 
 // Get search parameters
 $search = isset($_GET['search']) ? trim($_GET['search']) : '';
+$specialty_filter = isset($_GET['specialty']) ? $_GET['specialty'] : '';
 
 // Base query to get professionals
 $query = "SELECT p.*, u.name, u.email 
@@ -22,6 +23,14 @@ if (!empty($search)) {
     $search_param = "%$search%";
     array_push($params, $search_param, $search_param, $search_param);
     $types .= "sss";
+}
+
+// Add specialty filter if selected
+if (!empty($specialty_filter)) {
+    $query .= " AND p.specializations LIKE ?";
+    $specialty_param = "%$specialty_filter%";
+    array_push($params, $specialty_param);
+    $types .= "s";
 }
 
 $query .= " ORDER BY p.is_featured DESC, p.rating DESC";
@@ -55,170 +64,342 @@ if ($fee_result && $fee_result->num_rows > 0) {
     }
 }
 
+// Get unique specializations for filter options
+$specializations = [];
+$spec_query = "SELECT DISTINCT specializations FROM professionals WHERE is_verified = 1";
+$spec_result = $conn->query($spec_query);
+
+if ($spec_result && $spec_result->num_rows > 0) {
+    while ($row = $spec_result->fetch_assoc()) {
+        $specs = explode(',', $row['specializations']);
+        foreach ($specs as $spec) {
+            $spec = trim($spec);
+            if (!empty($spec) && !in_array($spec, $specializations)) {
+                $specializations[] = $spec;
+            }
+        }
+    }
+    sort($specializations);
+}
+
 $page_title = "Find a Consultant | Visafy";
 include('includes/header.php');
 ?>
 
-<link rel="stylesheet" href="assets/css/consultant.css">
+<style>
+    /* Main container styles */
+    .consultants-container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 30px 20px;
+        background-color: #f8f9fc;
+        border-radius: 12px;
+        border: 1px solid rgba(0, 0, 0, 0.1);
+    }
+    
+    /* Search section styles */
+    .search-section {
+        margin-bottom: 30px;
+    }
+    
+    .search-box {
+        position: relative;
+        margin-bottom: 20px;
+    }
+    
+    .search-box input {
+        width: 100%;
+        padding: 15px 20px;
+        padding-left: 45px;
+        border-radius: 30px;
+        border: 1px solid #e0e0e5;
+        font-size: 16px;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+        transition: all 0.3s;
+    }
+    
+    .search-box input:focus {
+        outline: none;
+        border-color: #4c7bf3;
+        box-shadow: 0 2px 15px rgba(76, 123, 243, 0.15);
+    }
+    
+    .search-box i {
+        position: absolute;
+        left: 20px;
+        top: 50%;
+        transform: translateY(-50%);
+        color: #666;
+    }
+    
+    /* Filter buttons */
+    .specialty-filters {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+        margin-bottom: 30px;
+    }
+    
+    .specialty-filter-btn {
+        padding: 8px 16px;
+        border-radius: 20px;
+        border: 1px solid #e0e0e5;
+        background-color: white;
+        font-size: 14px;
+        color: #333;
+        cursor: pointer;
+        transition: all 0.2s;
+    }
+    
+    .specialty-filter-btn:hover {
+        background-color: #f0f0f5;
+    }
+    
+    .specialty-filter-btn.active {
+        background-color: #4c7bf3;
+        color: white;
+        border-color: #4c7bf3;
+    }
+    
+    /* Consultant cards grid */
+    .consultants-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+        gap: 25px;
+    }
+    
+    /* Individual consultant card */
+    .consultant-card {
+        background-color: white;
+        border-radius: 12px;
+        overflow: hidden;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+        transition: all 0.3s;
+        cursor: pointer;
+        text-decoration: none;
+        color: inherit;
+        display: block;
+    }
+    
+    .consultant-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+    }
+    
+    .consultant-header {
+        padding: 25px;
+        display: flex;
+        align-items: center;
+    }
+    
+    .consultant-photo {
+        width: 80px;
+        height: 80px;
+        border-radius: 50%;
+        object-fit: cover;
+        margin-right: 15px;
+        background-color: #f0f0f5;
+        border: 1px solid #e0e0e5;
+    }
+    
+    .consultant-info h3 {
+        margin: 0 0 5px 0;
+        font-size: 18px;
+        color: #333;
+    }
+    
+    .consultant-rating {
+        color: #ffc107;
+        font-size: 14px;
+        margin-bottom: 8px;
+        display: flex;
+        align-items: center;
+    }
+    
+    .consultant-rating span {
+        color: #666;
+        margin-left: 5px;
+    }
+    
+    .consultant-specialties {
+        padding: 0 25px 15px;
+    }
+    
+    .consultant-specialties .badge {
+        display: inline-block;
+        background-color: #e7f1ff;
+        color: #4c7bf3;
+        padding: 5px 12px;
+        border-radius: 15px;
+        font-size: 13px;
+        margin-right: 8px;
+        margin-bottom: 8px;
+        font-weight: 500;
+    }
+    
+    .consultant-description {
+        padding: 0 25px 20px;
+        font-size: 14px;
+        color: #666;
+        line-height: 1.5;
+    }
+    
+    .consultant-footer {
+        padding: 15px 25px;
+        border-top: 1px solid #f0f0f5;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+    }
+    
+    .consultant-experience {
+        display: flex;
+        align-items: center;
+        color: #666;
+        font-size: 14px;
+    }
+    
+    .consultant-experience i {
+        margin-right: 8px;
+        color: #4c7bf3;
+    }
+    
+    .view-profile-btn {
+        display: inline-flex;
+        align-items: center;
+        color: #4c7bf3;
+        font-size: 14px;
+        font-weight: 500;
+        transition: all 0.2s;
+    }
+    
+    .view-profile-btn i {
+        margin-left: 5px;
+        transition: transform 0.2s;
+    }
+    
+    .view-profile-btn:hover {
+        color: #3a5ec8;
+    }
+    
+    .view-profile-btn:hover i {
+        transform: translateX(3px);
+    }
+    
+    @media (max-width: 768px) {
+        .consultants-grid {
+            grid-template-columns: 1fr;
+        }
+    }
+</style>
 
-<!-- Page Header -->
-<section class="page-header" style="background-color: var(--color-burgundy); padding: 100px 0; color: var(--color-light); text-align: center;">
-    <div style="position: absolute; width: 300px; height: 300px; border-radius: 50%; background-color: rgba(255, 255, 255, 0.1); top: -100px; left: -100px;"></div>
-    <div style="position: absolute; width: 200px; height: 200px; border-radius: 50%; background-color: rgba(255, 255, 255, 0.1); bottom: -50px; right: 10%; animation: pulse 4s infinite alternate;"></div>
-    <div style="position: absolute; width: 100px; height: 100px; border-radius: 50%; background-color: rgba(255, 255, 255, 0.1); top: 30%; right: 20%; animation: pulse 3s infinite alternate;"></div>
-    <div class="container">
-        <h1 data-aos="fade-up">Find an Immigration Consultant</h1>
-        <p class="lead" data-aos="fade-up" data-aos-delay="100">Connect with experienced and verified immigration professionals who can help you with your immigration journey.</p>
-        
-        <!-- Modern Search Bar -->
-        <div class="search-container" data-aos="fade-up" data-aos-delay="200" style="max-width: 700px; margin: 2rem auto 0;">
-            <form action="" method="GET">
-                <input type="text" name="search" placeholder="Search for consultants by name, specialty, or description..." value="<?php echo htmlspecialchars($search); ?>">
-                <button type="submit"><i class="fas fa-search"></i></button>
-            </form>
+<div class="consultants-container">
+    <div class="search-section">
+        <div class="search-box">
+            <i class="fas fa-search"></i>
+            <input type="text" id="consultant-search" placeholder="Search consultants by name, specialty, or location..." value="<?php echo htmlspecialchars($search); ?>">
         </div>
         
-        <nav aria-label="breadcrumb" data-aos="fade-up" data-aos-delay="150">
-            <ol class="breadcrumb" style="display: flex; justify-content: center; list-style: none; padding: 0; margin: 20px 0 0 0;">
-          
-            </ol>
-        </nav>
+        <div class="specialty-filters">
+            <button class="specialty-filter-btn <?php echo empty($specialty_filter) ? 'active' : ''; ?>" data-specialty="">All</button>
+            <?php if (in_array('Express Entry', $specializations)): ?>
+                <button class="specialty-filter-btn <?php echo $specialty_filter === 'Express Entry' ? 'active' : ''; ?>" data-specialty="Express Entry">Express Entry</button>
+            <?php endif; ?>
+            <?php if (in_array('Work Permit', $specializations)): ?>
+                <button class="specialty-filter-btn <?php echo $specialty_filter === 'Work Permit' ? 'active' : ''; ?>" data-specialty="Work Permit">Work Permit</button>
+            <?php endif; ?>
+            <?php if (in_array('Student Visa', $specializations)): ?>
+                <button class="specialty-filter-btn <?php echo $specialty_filter === 'Student Visa' ? 'active' : ''; ?>" data-specialty="Student Visa">Student Visa</button>
+            <?php endif; ?>
+            <?php if (in_array('Family Sponsorship', $specializations)): ?>
+                <button class="specialty-filter-btn <?php echo $specialty_filter === 'Family Sponsorship' ? 'active' : ''; ?>" data-specialty="Family Sponsorship">Family Sponsorship</button>
+            <?php endif; ?>
+        </div>
     </div>
-</section>
-
-<section class="section" style="background-color: var(--color-cream); padding: 50px 0;">
-    <div class="container">
-        <!-- Results Section -->
-        <?php if (empty($consultants)): ?>
-            <div class="no-results" style="text-align: center; padding: 50px; background-color: white; border-radius: 10px; box-shadow: 0 5px 15px rgba(0,0,0,0.05);" data-aos="fade-up">
-                <div style="font-size: 4rem; color: var(--color-secondary); margin-bottom: 20px;">
-                    <i class="fas fa-search"></i>
-                </div>
-                <h3 style="color: var(--color-primary); margin-bottom: 15px;">No consultants found</h3>
-                <p style="color: var(--color-gray); max-width: 500px; margin: 0 auto;">Sorry, we couldn't find any consultants matching your criteria. Try adjusting your search term.</p>
-            </div>
-        <?php else: ?>
-            <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(500px, 1fr)); gap: 30px;">
-                <?php foreach ($consultants as $consultant): ?>
-                    <a href="consultant-profile.php?id=<?php echo $consultant['id']; ?>" style="text-decoration: none; color: inherit;">
-                        <div class="consultant-card" style="display: flex; background: white; border-radius: 10px; overflow: hidden; box-shadow: 0 5px 15px rgba(0,0,0,0.05); transition: all 0.3s ease; height: 100%; cursor: pointer; border-left: <?php echo $consultant['is_featured'] ? '4px solid var(--color-secondary)' : 'none'; ?>;" data-aos="fade-up">
-                            <?php if ($consultant['is_featured']): ?>
-                                <div style="position: absolute; top: 15px; right: 15px; background-color: var(--color-secondary); color: white; padding: 5px 10px; font-size: 0.75rem; border-radius: 20px; font-weight: 600; z-index: 1;">Featured</div>
-                            <?php endif; ?>
-                            
-                            <div style="padding: 30px; display: flex; width: 100%; flex-direction: column;">
-                                <div style="display: flex; margin-bottom: 20px;">
-                                    <div style="flex: 0 0 100px;">
-                                        <img src="<?php echo !empty($consultant['profile_image']) ? htmlspecialchars($consultant['profile_image']) : 'assets/images/logo-Visafy-light.png'; ?>" 
-                                             alt="<?php echo htmlspecialchars($consultant['name']); ?>" 
-                                             style="width: 100px; height: 100px; border-radius: 50%; object-fit: cover; box-shadow: 0 5px 15px rgba(0,0,0,0.1);">
-                                    </div>
-                                    
-                                    <div style="flex: 1; padding-left: 25px;">
-                                        <h3 style="color: var(--color-primary); font-size: 1.4rem; margin-bottom: 5px;"><?php echo htmlspecialchars($consultant['name']); ?></h3>
-                                        <div style="color: var(--color-gray); font-size: 0.9rem; margin-bottom: 10px;"><?php echo htmlspecialchars($consultant['license_number']); ?></div>
-                                        
-                                        <div style="display: flex; gap: 10px; flex-wrap: wrap;">
-                                            <span style="background-color: rgba(4, 33, 103, 0.1); color: var(--color-primary); padding: 5px 10px; border-radius: 20px; font-size: 0.8rem; display: inline-flex; align-items: center;">
-                                                <i class="fas fa-briefcase" style="margin-right: 5px;"></i> <?php echo htmlspecialchars($consultant['years_experience']); ?> years
-                                            </span>
-                                            
-                                            <?php if ($consultant['rating']): ?>
-                                                <span style="background-color: rgba(234, 170, 52, 0.1); color: var(--color-secondary); padding: 5px 10px; border-radius: 20px; font-size: 0.8rem; display: inline-flex; align-items: center;">
-                                                    <i class="fas fa-star" style="margin-right: 5px;"></i> <?php echo number_format($consultant['rating'], 1); ?>
-                                                    (<?php echo $consultant['reviews_count']; ?>)
-                                                </span>
-                                            <?php endif; ?>
-                                        </div>
-                                    </div>
-                                </div>
-                                
-                                <div style="margin-bottom: 15px;">
-                                    <div style="font-weight: 600; font-size: 0.85rem; margin-bottom: 5px; color: var(--color-dark); display: flex; align-items: center;">
-                                        <i class="fas fa-clipboard-list" style="margin-right: 8px; color: var(--color-primary);"></i> Specialties
-                                    </div>
-                                    <div style="display: flex; flex-wrap: wrap; gap: 5px;">
-                                        <?php 
-                                        $specs = explode(',', $consultant['specializations']); 
-                                        foreach ($specs as $spec): 
-                                            $spec = trim($spec);
-                                            if (!empty($spec)):
-                                        ?>
-                                            <span style="background-color: rgba(4, 33, 103, 0.08); color: var(--color-primary); padding: 4px 12px; border-radius: 20px; font-size: 0.8rem;"><?php echo htmlspecialchars($spec); ?></span>
-                                        <?php 
-                                            endif;
-                                        endforeach; 
-                                        ?>
-                                    </div>
-                                </div>
-                                
-                                <div style="margin-bottom: 15px;">
-                                    <div style="font-weight: 600; font-size: 0.85rem; margin-bottom: 5px; color: var(--color-dark); display: flex; align-items: center;">
-                                        <i class="fas fa-globe" style="margin-right: 8px; color: var(--color-secondary);"></i> Languages
-                                    </div>
-                                    <div style="display: flex; flex-wrap: wrap; gap: 5px;">
-                                        <?php 
-                                        $langs = explode(',', $consultant['languages']); 
-                                        foreach ($langs as $lang): 
-                                            $lang = trim($lang);
-                                            if (!empty($lang)):
-                                        ?>
-                                            <span style="background-color: rgba(234, 170, 52, 0.08); color: var(--color-secondary); padding: 4px 12px; border-radius: 20px; font-size: 0.8rem;"><?php echo htmlspecialchars($lang); ?></span>
-                                        <?php 
-                                            endif;
-                                        endforeach; 
-                                        ?>
-                                    </div>
-                                </div>
-                                
-                                <div>
-                                    <div style="font-weight: 600; font-size: 0.85rem; margin-bottom: 5px; color: var(--color-dark); display: flex; align-items: center;">
-                                        <i class="fas fa-comments" style="margin-right: 8px; color: var(--color-primary);"></i> Consultation Options
-                                    </div>
-                                    <div style="display: flex; flex-wrap: wrap; gap: 10px;">
-                                        <?php if (isset($consultation_fees[$consultant['user_id']])): ?>
-                                            <?php if (isset($consultation_fees[$consultant['user_id']]['video'])): ?>
-                                                <span style="background-color: rgba(4, 33, 103, 0.08); color: var(--color-primary); width: 35px; height: 35px; border-radius: 50%; display: flex; align-items: center; justify-content: center;" title="Video">
-                                                    <i class="fas fa-video"></i>
-                                                </span>
-                                            <?php endif; ?>
-                                            
-                                            <?php if (isset($consultation_fees[$consultant['user_id']]['phone'])): ?>
-                                                <span style="background-color: rgba(4, 33, 103, 0.08); color: var(--color-primary); width: 35px; height: 35px; border-radius: 50%; display: flex; align-items: center; justify-content: center;" title="Phone">
-                                                    <i class="fas fa-phone"></i>
-                                                </span>
-                                            <?php endif; ?>
-                                            
-                                            <?php if (isset($consultation_fees[$consultant['user_id']]['inperson'])): ?>
-                                                <span style="background-color: rgba(4, 33, 103, 0.08); color: var(--color-primary); width: 35px; height: 35px; border-radius: 50%; display: flex; align-items: center; justify-content: center;" title="In-person">
-                                                    <i class="fas fa-user"></i>
-                                                </span>
-                                            <?php endif; ?>
-                                        <?php else: ?>
-                                            <span style="background-color: rgba(4, 33, 103, 0.08); color: var(--color-primary); padding: 4px 12px; border-radius: 20px; font-size: 0.8rem; display: inline-flex; align-items: center;">
-                                                <i class="fas fa-info-circle" style="margin-right: 5px;"></i> Contact for options
-                                            </span>
-                                        <?php endif; ?>
-                                    </div>
-                                </div>
-                            </div>
+    
+    <div class="consultants-grid">
+        <?php foreach ($consultants as $consultant): ?>
+            <a href="consultant-profile.php?id=<?php echo $consultant['id']; ?>" class="consultant-card">
+                <div class="consultant-header">
+                    <img src="<?php echo !empty($consultant['profile_image']) ? htmlspecialchars($consultant['profile_image']) : 'assets/images/logo-Visafy-light.png'; ?>" alt="<?php echo htmlspecialchars($consultant['name']); ?>" class="consultant-photo">
+                    <div class="consultant-info">
+                        <h3><?php echo htmlspecialchars($consultant['name']); ?></h3>
+                        <div class="consultant-rating">
+                            <?php for ($i = 1; $i <= 5; $i++): ?>
+                                <?php if ($i <= round($consultant['rating'])): ?>
+                                    <i class="fas fa-star"></i>
+                                <?php else: ?>
+                                    <i class="far fa-star"></i>
+                                <?php endif; ?>
+                            <?php endfor; ?>
+                            <span><?php echo number_format($consultant['rating'], 1); ?> (<?php echo $consultant['reviews_count']; ?> reviews)</span>
                         </div>
-                    </a>
-                <?php endforeach; ?>
-            </div>
-        <?php endif; ?>
+                    </div>
+                </div>
+                
+                <div class="consultant-specialties">
+                    <?php 
+                    $specs = explode(',', $consultant['specializations']); 
+                    $displayedSpecs = 0;
+                    foreach ($specs as $spec): 
+                        $spec = trim($spec);
+                        if (!empty($spec) && $displayedSpecs < 2):
+                            $displayedSpecs++;
+                    ?>
+                        <span class="badge"><?php echo htmlspecialchars($spec); ?></span>
+                    <?php 
+                        endif;
+                    endforeach; 
+                    ?>
+                </div>
+                
+                <div class="consultant-description">
+                    <?php 
+                    // Display a shortened version of bio (if available)
+                    if (!empty($consultant['bio'])) {
+                        echo htmlspecialchars(substr($consultant['bio'], 0, 100) . (strlen($consultant['bio']) > 100 ? '...' : ''));
+                    } else {
+                        echo 'Experienced immigration consultant helping applicants with their visa applications.';
+                    }
+                    ?>
+                </div>
+                
+                <div class="consultant-footer">
+                    <div class="consultant-experience">
+                        <i class="fas fa-briefcase"></i>
+                        <span><?php echo htmlspecialchars($consultant['years_experience']); ?> years experience</span>
+                    </div>
+                    <div class="view-profile-btn">
+                        View Profile <i class="fas fa-arrow-right"></i>
+                    </div>
+                </div>
+            </a>
+        <?php endforeach; ?>
     </div>
-</section>
+</div>
 
 <script>
 document.addEventListener('DOMContentLoaded', function() {
-    // Initialize AOS
-    if (typeof AOS !== 'undefined') {
-        AOS.init({
-            duration: 800,
-            once: true
+    // Handle specialty filter buttons
+    const filterButtons = document.querySelectorAll('.specialty-filter-btn');
+    const searchInput = document.getElementById('consultant-search');
+    
+    filterButtons.forEach(button => {
+        button.addEventListener('click', function() {
+            const specialty = this.getAttribute('data-specialty');
+            window.location.href = 'consultant.php' + (specialty ? '?specialty=' + encodeURIComponent(specialty) : '') + 
+                                   (searchInput.value ? (specialty ? '&' : '?') + 'search=' + encodeURIComponent(searchInput.value) : '');
         });
-    }
+    });
+    
+    // Handle search input
+    searchInput.addEventListener('keypress', function(e) {
+        if (e.key === 'Enter') {
+            const specialty = new URLSearchParams(window.location.search).get('specialty') || '';
+            window.location.href = 'consultant.php?search=' + encodeURIComponent(this.value) + 
+                                   (specialty ? '&specialty=' + encodeURIComponent(specialty) : '');
+        }
+    });
 });
 </script>
 
