@@ -6,7 +6,7 @@ require_once 'config/database.php';
 $search = isset($_GET['search']) ? trim($_GET['search']) : '';
 $specialty_filter = isset($_GET['specialty']) ? $_GET['specialty'] : '';
 
-// Base query to get professionals
+// Base query to get professionals - remove the verification requirement
 $query = "SELECT p.*, u.name, u.email 
           FROM professionals p 
           JOIN users u ON p.user_id = u.id 
@@ -326,13 +326,21 @@ include('includes/header.php');
                         <h3><?php echo htmlspecialchars($consultant['name']); ?></h3>
                         <div class="consultant-rating">
                             <?php for ($i = 1; $i <= 5; $i++): ?>
-                                <?php if ($i <= round($consultant['rating'])): ?>
+                                <?php if ($consultant['rating'] !== null && $i <= round($consultant['rating'])): ?>
                                     <i class="fas fa-star"></i>
                                 <?php else: ?>
                                     <i class="far fa-star"></i>
                                 <?php endif; ?>
                             <?php endfor; ?>
-                            <span><?php echo number_format($consultant['rating'], 1); ?> (<?php echo $consultant['reviews_count']; ?> reviews)</span>
+                            <span>
+                                <?php 
+                                if ($consultant['rating'] !== null) {
+                                    echo number_format($consultant['rating'], 1) . ' (' . $consultant['reviews_count'] . ' reviews)';
+                                } else {
+                                    echo 'No ratings yet';
+                                }
+                                ?>
+                            </span>
                         </div>
                     </div>
                 </div>

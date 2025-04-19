@@ -29,6 +29,21 @@ $profile_exists = $result->num_rows > 0;
 $profile_data = $profile_exists ? $result->fetch_assoc() : null;
 $stmt->close();
 
+// Get predefined languages
+$predefined_languages = [
+    'English', 'French', 'Spanish', 'Mandarin', 'Hindi', 'Arabic', 
+    'Portuguese', 'Bengali', 'Russian', 'Japanese', 'Punjabi', 
+    'German', 'Korean', 'Turkish', 'Tamil', 'Italian', 'Urdu'
+];
+
+// Get predefined specializations
+$predefined_specializations = [
+    'Express Entry', 'Family Sponsorship', 'Student Visa', 'Work Permit',
+    'Business Immigration', 'Provincial Nominee', 'Skilled Worker', 
+    'Startup Visa', 'Refugee Claims', 'Citizenship Applications',
+    'Humanitarian Cases', 'Appeals & Tribunals', 'LMIA Applications'
+];
+
 // Process form submission
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     // Basic validation
@@ -39,11 +54,19 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $license_number = htmlspecialchars(trim($_POST['license_number']));
         $years_experience = (int)$_POST['years_experience'];
         $education = htmlspecialchars(trim($_POST['education']));
-        $specializations = htmlspecialchars(trim($_POST['specializations']));
+        
+        // Handle specializations from tag input
+        $specializations = isset($_POST['specialization_tags']) ? $_POST['specialization_tags'] : [];
+        $specializations = implode(', ', array_map('trim', $specializations));
+        
         $bio = htmlspecialchars(trim($_POST['bio']));
         $phone = htmlspecialchars(trim($_POST['phone']));
         $website = htmlspecialchars(trim($_POST['website']));
-        $languages = htmlspecialchars(trim($_POST['languages']));
+        
+        // Handle languages from tag input
+        $languages = isset($_POST['language_tags']) ? $_POST['language_tags'] : [];
+        $languages = implode(', ', array_map('trim', $languages));
+        
         $availability_status = htmlspecialchars(trim($_POST['availability_status']));
         $profile_completed = 1;
         
@@ -84,7 +107,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     availability_status = ?";
             
             $params = [$license_number, $years_experience, $education, $specializations, $bio, $phone, $website, $languages, $profile_completed, $availability_status];
-            $types = "sississsi";
+            $types = "siisssssis";
             
             if ($profile_image) {
                 // Check if profile_image column exists
@@ -113,7 +136,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $params = [$user_id, $license_number, $years_experience, $education, 
                        $specializations, $bio, $phone, $website, $languages, 
                        $profile_completed, $availability_status];
-            $types = "isissssssi";
+            $types = "isiisssssis";
             
             if ($profile_image) {
                 // Check if profile_image column exists
@@ -145,8 +168,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         } else {
             $error_message = "Error saving profile: " . $stmt->error;
         }
-        
-        $stmt->close();
     }
 }
 
@@ -154,6 +175,83 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 $page_title = "Professional Profile | Visafy";
 include '../includes/header.php';
 ?>
+
+<style>
+.tag-container {
+    display: flex;
+    flex-wrap: wrap;
+    padding: 8px;
+    border: 1px solid #ced4da;
+    border-radius: 0.25rem;
+    gap: 8px;
+    min-height: 40px;
+    background-color: #fff;
+}
+
+.tag {
+    display: flex;
+    align-items: center;
+    background-color: #e7f3ff;
+    border: 1px solid #0d6efd;
+    color: #0d6efd;
+    border-radius: 16px;
+    padding: 4px 12px;
+    font-size: 14px;
+}
+
+.tag .remove-tag {
+    margin-left: 6px;
+    cursor: pointer;
+    font-weight: bold;
+}
+
+.tag-suggestions {
+    display: none;
+    position: absolute;
+    z-index: 1000;
+    max-height: 200px;
+    overflow-y: auto;
+    background-color: #fff;
+    border: 1px solid #ced4da;
+    border-radius: 0.25rem;
+    width: 100%;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+}
+
+.tag-suggestion {
+    padding: 8px 16px;
+    cursor: pointer;
+}
+
+.tag-suggestion:hover {
+    background-color: #f8f9fa;
+}
+
+.add-tag-button {
+    display: flex;
+    align-items: center;
+    color: #6c757d;
+    padding: 4px 8px;
+    background: none;
+    border: 1px dashed #ced4da;
+    border-radius: 16px;
+    cursor: pointer;
+    font-size: 14px;
+}
+
+.add-tag-button i {
+    margin-right: 4px;
+}
+
+.profile-image-preview {
+    width: 150px;
+    height: 150px;
+    border-radius: 50%;
+    object-fit: cover;
+    margin-bottom: 16px;
+    border: 2px solid #e0e0e5;
+}
+</style>
 
 <div class="container-fluid">
     <div class="row">
@@ -192,15 +290,13 @@ include '../includes/header.php';
                         <div class="row mb-4">
                             <div class="col-md-3 text-center">
                                 <?php if ($profile_exists && !empty($profile_data['profile_image'])): ?>
-                                    <img src="<?php echo '../../' . $profile_data['profile_image']; ?>" alt="Profile Image" class="img-fluid rounded-circle mb-3" style="width: 150px; height: 150px; object-fit: cover;">
+                                    <img id="profile-preview" src="<?php echo '../../' . $profile_data['profile_image']; ?>" alt="Profile Image" class="profile-image-preview">
                                 <?php else: ?>
-                                    <div class="bg-light rounded-circle d-flex align-items-center justify-content-center mb-3 mx-auto" style="width: 150px; height: 150px;">
-                                        <i class="bi bi-person-circle" style="font-size: 80px;"></i>
-                                    </div>
+                                    <img id="profile-preview" src="../../assets/images/profile-placeholder.png" alt="Profile Placeholder" class="profile-image-preview">
                                 <?php endif; ?>
                                 <div class="mb-3">
                                     <label for="profile_image" class="form-label">Profile Image</label>
-                                    <input type="file" class="form-control" id="profile_image" name="profile_image">
+                                    <input type="file" class="form-control" id="profile_image" name="profile_image" accept="image/*">
                                     <div class="form-text">Recommended size: 300x300 pixels</div>
                                 </div>
                             </div>
@@ -242,9 +338,29 @@ include '../includes/header.php';
                         </div>
 
                         <div class="mb-3">
-                            <label for="specializations" class="form-label">Specializations</label>
-                            <textarea class="form-control" id="specializations" name="specializations" rows="2"><?php echo $profile_exists ? htmlspecialchars($profile_data['specializations']) : ''; ?></textarea>
-                            <div class="form-text">Enter your areas of expertise (e.g., Express Entry, Family Sponsorship, Study Permits)</div>
+                            <label class="form-label">Specializations</label>
+                            <div class="position-relative">
+                                <div id="specialization-container" class="tag-container">
+                                    <?php 
+                                    if ($profile_exists && !empty($profile_data['specializations'])) {
+                                        $specializations = explode(',', $profile_data['specializations']);
+                                        foreach ($specializations as $spec) {
+                                            $spec = trim($spec);
+                                            if (!empty($spec)) {
+                                                echo '<div class="tag"><span>' . htmlspecialchars($spec) . '</span><span class="remove-tag">×</span><input type="hidden" name="specialization_tags[]" value="' . htmlspecialchars($spec) . '"></div>';
+                                            }
+                                        }
+                                    }
+                                    ?>
+                                    <button type="button" id="add-specialization" class="add-tag-button"><i class="bi bi-plus-circle"></i> Add</button>
+                                </div>
+                                <div id="specialization-suggestions" class="tag-suggestions">
+                                    <?php foreach ($predefined_specializations as $spec): ?>
+                                        <div class="tag-suggestion"><?php echo htmlspecialchars($spec); ?></div>
+                                    <?php endforeach; ?>
+                                </div>
+                            </div>
+                            <div class="form-text">Select or enter your areas of expertise</div>
                         </div>
 
                         <div class="mb-3">
@@ -254,9 +370,29 @@ include '../includes/header.php';
                         </div>
 
                         <div class="mb-3">
-                            <label for="languages" class="form-label">Languages Spoken</label>
-                            <input type="text" class="form-control" id="languages" name="languages" value="<?php echo $profile_exists ? htmlspecialchars($profile_data['languages']) : ''; ?>">
-                            <div class="form-text">Separate multiple languages with commas (e.g., English, French, Spanish)</div>
+                            <label class="form-label">Languages Spoken</label>
+                            <div class="position-relative">
+                                <div id="language-container" class="tag-container">
+                                    <?php 
+                                    if ($profile_exists && !empty($profile_data['languages'])) {
+                                        $languages = explode(',', $profile_data['languages']);
+                                        foreach ($languages as $lang) {
+                                            $lang = trim($lang);
+                                            if (!empty($lang)) {
+                                                echo '<div class="tag"><span>' . htmlspecialchars($lang) . '</span><span class="remove-tag">×</span><input type="hidden" name="language_tags[]" value="' . htmlspecialchars($lang) . '"></div>';
+                                            }
+                                        }
+                                    }
+                                    ?>
+                                    <button type="button" id="add-language" class="add-tag-button"><i class="bi bi-plus-circle"></i> Add</button>
+                                </div>
+                                <div id="language-suggestions" class="tag-suggestions">
+                                    <?php foreach ($predefined_languages as $language): ?>
+                                        <div class="tag-suggestion"><?php echo htmlspecialchars($language); ?></div>
+                                    <?php endforeach; ?>
+                                </div>
+                            </div>
+                            <div class="form-text">Select or enter languages you speak</div>
                         </div>
 
                         <div class="mb-3">
@@ -298,5 +434,109 @@ include '../includes/header.php';
         </main>
     </div>
 </div>
+
+<script>
+// Profile image preview
+document.getElementById('profile_image').addEventListener('change', function(e) {
+    const file = e.target.files[0];
+    if (file) {
+        const reader = new FileReader();
+        reader.onload = function(event) {
+            document.getElementById('profile-preview').src = event.target.result;
+        };
+        reader.readAsDataURL(file);
+    }
+});
+
+// Tag input functionality for Specializations
+function initTagInput(containerId, suggestionsId, addButtonId, predefinedOptions) {
+    const container = document.getElementById(containerId);
+    const suggestions = document.getElementById(suggestionsId);
+    const addButton = document.getElementById(addButtonId);
+    
+    // Show suggestions when clicking the add button
+    addButton.addEventListener('click', function() {
+        suggestions.style.display = 'block';
+    });
+    
+    // Hide suggestions when clicking outside
+    document.addEventListener('click', function(e) {
+        if (!container.contains(e.target) && !suggestions.contains(e.target)) {
+            suggestions.style.display = 'none';
+        }
+    });
+    
+    // Add a tag when clicking a suggestion
+    Array.from(suggestions.getElementsByClassName('tag-suggestion')).forEach(suggestion => {
+        suggestion.addEventListener('click', function() {
+            const tagText = this.textContent.trim();
+            const existingTags = Array.from(container.getElementsByClassName('tag'))
+                .map(tag => tag.querySelector('span').textContent.trim());
+            
+            if (!existingTags.includes(tagText)) {
+                addTag(container, tagText, addButton);
+            }
+            suggestions.style.display = 'none';
+        });
+    });
+    
+    // Remove tag when clicking the X
+    container.addEventListener('click', function(e) {
+        if (e.target.classList.contains('remove-tag')) {
+            e.target.parentElement.remove();
+        }
+    });
+    
+    // Allow adding custom tags by pressing Enter in the input field
+    container.addEventListener('keydown', function(e) {
+        if (e.key === 'Enter' && document.activeElement.classList.contains('tag-input')) {
+            e.preventDefault();
+            const input = document.activeElement;
+            const tagText = input.value.trim();
+            
+            if (tagText) {
+                const parent = input.parentElement;
+                parent.remove();
+                addTag(container, tagText, addButton);
+            }
+        }
+    });
+}
+
+function addTag(container, text, addButton) {
+    // Create tag element
+    const tag = document.createElement('div');
+    tag.className = 'tag';
+    
+    // Create text span
+    const tagText = document.createElement('span');
+    tagText.textContent = text;
+    
+    // Create remove button
+    const removeBtn = document.createElement('span');
+    removeBtn.className = 'remove-tag';
+    removeBtn.textContent = '×';
+    
+    // Create hidden input to store value
+    const hiddenInput = document.createElement('input');
+    hiddenInput.type = 'hidden';
+    hiddenInput.name = container.id === 'specialization-container' ? 'specialization_tags[]' : 'language_tags[]';
+    hiddenInput.value = text;
+    
+    // Append elements
+    tag.appendChild(tagText);
+    tag.appendChild(removeBtn);
+    tag.appendChild(hiddenInput);
+    
+    // Insert before add button
+    container.insertBefore(tag, addButton);
+}
+
+// Initialize tag inputs
+document.addEventListener('DOMContentLoaded', function() {
+    initTagInput('specialization-container', 'specialization-suggestions', 'add-specialization');
+    initTagInput('language-container', 'language-suggestions', 'add-language');
+});
+</script>
 
 <?php include '../includes/footer.php'; ?> 
